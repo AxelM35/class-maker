@@ -1,0 +1,238 @@
+/* ==========================================================================
+   ClassesMaker — main.css
+   Design : registre / cahier d'écolier — sobre, professionnel (§6.1)
+   ========================================================================== */
+
+:root {
+  /* Couleurs — palette "registre scolaire" */
+  --color-paper: #edefe9;
+  --color-paper-raised: #f6f7f3;
+  --color-ink: #1f2933;
+  --color-ink-soft: #4a5560;
+  --color-slate: #5b6b73;
+  --color-rule-red: #b23a3a;
+  --color-rule-red-soft: #b23a3a26;
+  --color-chalk-green: #3f6b4f;
+  --color-chalk-green-soft: #3f6b4f1f;
+  --color-amber: #c4832a;
+  --color-amber-soft: #c4832a22;
+  --color-error: #b23a3a;
+  --color-error-soft: #b23a3a1a;
+  --color-border: #d7d9cf;
+
+  /* Statuts (bandeau de synthèse, logs — §4.3 / §5.9) */
+  --status-ok: var(--color-chalk-green);
+  --status-warn: var(--color-amber);
+  --status-error: var(--color-error);
+  --status-info: #2e5266;
+
+  /* Typographie */
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Consolas", monospace;
+
+  /* Échelle */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+
+  --margin-rule-width: 3px;
+  --margin-rule-offset: 56px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Quadrillage discret en fond, évoque le cahier Seyès sans surcharger */
+body {
+  background-image:
+    linear-gradient(var(--color-border) 1px, transparent 1px);
+  background-size: 100% 28px;
+  background-attachment: local;
+  background-color: var(--color-paper);
+  opacity: 1;
+}
+
+.app {
+  max-width: 1280px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- En-tête ---- */
+
+.app-header {
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.app-header__brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.app-header__mark {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #fff;
+  background: var(--color-rule-red);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.app-header__title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--color-ink);
+}
+
+.app-header__subtitle {
+  margin: var(--space-1) 0 0;
+  color: var(--color-ink-soft);
+  font-size: 14px;
+}
+
+/* ---- Navigation du wizard ---- */
+
+.wizard-nav {
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.wizard-nav__list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--space-2);
+  overflow-x: auto;
+}
+
+.wizard-nav__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--color-slate);
+  white-space: nowrap;
+  cursor: not-allowed;
+  border: 1px solid transparent;
+}
+
+.wizard-nav__item.is-reachable {
+  cursor: pointer;
+}
+
+.wizard-nav__item.is-reachable:hover {
+  background: var(--color-paper-raised);
+  color: var(--color-ink);
+}
+
+.wizard-nav__num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-slate);
+}
+
+.wizard-nav__label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.wizard-nav__item.is-active {
+  background: var(--color-paper-raised);
+  border-color: var(--color-border);
+  color: var(--color-ink);
+}
+
+.wizard-nav__item.is-active .wizard-nav__num {
+  color: var(--color-rule-red);
+  font-weight: 700;
+}
+
+.wizard-nav__item.is-done .wizard-nav__num::after {
+  content: "";
+}
+
+.wizard-nav__item.is-done {
+  color: var(--color-chalk-green);
+}
+
+/* ---- Zone de contenu principale ----
+   Signature visuelle : marge rouge verticale façon cahier d'écolier */
+
+.wizard-content {
+  flex: 1;
+  position: relative;
+  margin-left: var(--margin-rule-offset);
+  padding: var(--space-6) var(--space-6) var(--space-7);
+  min-height: 480px;
+}
+
+.wizard-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(-1 * (var(--margin-rule-offset) - 24px));
+  width: var(--margin-rule-width);
+  background: var(--color-rule-red);
+  opacity: 0.55;
+}
+
+.step-placeholder {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-slate);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  background: var(--color-paper-raised);
+}
+
+/* ---- Pied de page / RGPD ---- */
+
+.app-footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.app-footer__rgpd {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-slate);
+  text-align: center;
+}
+
+/* ---- Modales (racine) ---- */
+
+.modal-root:empty {
+  display: none;
+}

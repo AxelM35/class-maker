@@ -1,0 +1,78 @@
+/* ==========================================================================
+   ClassesMaker — theme.css
+   Finitions transverses : accessibilité clavier, scrollbars, sélection
+   de texte — cohérentes avec l'identité "registre scolaire" (§6.1).
+   ========================================================================== */
+
+/* ---- Focus clavier visible (accessibilité) ---- */
+
+:focus-visible {
+  outline: 2px solid var(--color-rule-red);
+  outline-offset: 2px;
+}
+
+.student-card:focus-visible {
+  outline-offset: -2px;
+}
+
+/* ---- Sélection de texte ---- */
+
+::selection {
+  background: var(--color-rule-red-soft);
+  color: var(--color-ink);
+}
+
+/* ---- Scrollbars (navigateurs basés sur WebKit/Chromium) ---- */
+
+.table-scroll::-webkit-scrollbar,
+.issues-list::-webkit-scrollbar,
+.class-board::-webkit-scrollbar,
+.log-terminal__body::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb,
+.issues-list::-webkit-scrollbar-thumb,
+.class-board::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.log-terminal__body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.log-terminal__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---- États de survol/interaction fins ---- */
+
+.wizard-nav__item {
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.class-column__list.is-drop-target {
+  transition: background-color 0.15s ease;
+}
+
+.summary-chip,
+.badge,
+.indicator {
+  user-select: none;
+}
+
+/* ---- Impression (fallback minimal si l'utilisateur imprime la page) ----
+   L'export officiel se fait via le fichier Excel (§5.7) ; ceci n'est
+   qu'un filet de sécurité pour un Ctrl+P impromptu. */
+@media print {
+  .wizard-nav,
+  .log-terminal,
+  .log-terminal-toggle,
+  .step__actions,
+  .modal-overlay {
+    display: none !important;
+  }
+}

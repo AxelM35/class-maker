@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClassesMaker — Constitution des classes de 6ème</title>
+
+  <!-- Polices : chargées localement à terme (voir §7.1 — pas de dépendance Internet).
+       En attendant l'intégration des fichiers de police, on utilise les fallbacks système. -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+</head>
+<body>
+
+  <div id="app" class="app">
+
+    <!-- En-tête -->
+    <header class="app-header">
+      <div class="app-header__brand">
+        <span class="app-header__mark">6e</span>
+        <h1 class="app-header__title">ClassesMaker</h1>
+      </div>
+      <p class="app-header__subtitle">Constitution des classes de 6ème</p>
+      <button type="button" id="log-terminal-toggle" class="log-terminal-toggle">
+        <span>🖥 Journal</span>
+        <span class="log-terminal-toggle__badge" id="log-terminal-badge" hidden>0</span>
+      </button>
+    </header>
+
+    <!-- Fil du wizard : 7 étapes (§6.2) -->
+    <nav class="wizard-nav" id="wizard-nav" aria-label="Étapes de constitution des classes">
+      <ol class="wizard-nav__list">
+        <li class="wizard-nav__item" data-step="import">
+          <span class="wizard-nav__num">01</span>
+          <span class="wizard-nav__label">Import</span>
+        </li>
+        <li class="wizard-nav__item" data-step="mapping">
+          <span class="wizard-nav__num">02</span>
+          <span class="wizard-nav__label">Mapping colonnes</span>
+        </li>
+        <li class="wizard-nav__item" data-step="verification">
+          <span class="wizard-nav__num">03</span>
+          <span class="wizard-nav__label">Vérification</span>
+        </li>
+        <li class="wizard-nav__item" data-step="settings">
+          <span class="wizard-nav__num">04</span>
+          <span class="wizard-nav__label">Paramétrage</span>
+        </li>
+        <li class="wizard-nav__item" data-step="assignment">
+          <span class="wizard-nav__num">05</span>
+          <span class="wizard-nav__label">Répartition</span>
+        </li>
+        <li class="wizard-nav__item" data-step="adjustment">
+          <span class="wizard-nav__num">06</span>
+          <span class="wizard-nav__label">Ajustement</span>
+        </li>
+        <li class="wizard-nav__item" data-step="export">
+          <span class="wizard-nav__num">07</span>
+          <span class="wizard-nav__label">Export</span>
+        </li>
+      </ol>
+    </nav>
+
+    <!-- Zone de contenu : chaque module d'étape vient s'y injecter (js/router.js) -->
+    <main class="wizard-content" id="wizard-content">
+      <!-- Rempli dynamiquement par router.js -->
+    </main>
+
+    <!-- Emplacement des modales (§5.10) -->
+    <div id="modal-root" class="modal-root" aria-live="polite"></div>
+
+    <!-- Terminal de log temps réel (§5.9) : panneau rétractable, monté par logTerminal.js -->
+    <div id="log-terminal-root"></div>
+
+    <!-- Mention RGPD obligatoire (§8.2) -->
+    <footer class="app-footer">
+      <p class="app-footer__rgpd">
+        Les données traitées sont des données personnelles. Elles ne quittent pas le réseau de l'établissement.
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- Bibliothèque SheetJS : lecture/écriture Excel côté client, incluse en local (§7.1) -->
+  <script src="lib/xlsx.min.js"></script>
+
+  <!--
+    Scripts classiques (PAS type="module") chargés dans l'ordre de leurs
+    dépendances : sous Chrome/Edge, les scripts type="module" déclenchent
+    une erreur CORS lorsque la page est ouverte en double-clic (file://),
+    car la résolution des modules passe par fetch(), qui est bloqué pour
+    ce protocole. Les scripts classiques ne sont pas concernés et
+    fonctionnent nativement en file:// (§7.1). Tous les scripts d'une même
+    page partagent la même portée globale, ce qui remplace ici les
+    import/export ES.
+  -->
+  <script src="js/state.js"></script>
+  <script src="js/utils/stringNormalize.js"></script>
+  <script src="js/utils/logger.js"></script>
+  <script src="js/utils/dragDrop.js"></script>
+  <script src="js/router.js"></script>
+
+  <script src="js/modules/import/excelParser.js"></script>
+  <script src="js/modules/matching/nameMatcher.js"></script>
+  <script src="js/modules/import/columnMapper.js"></script>
+  <script src="js/modules/import/validator.js"></script>
+
+  <script src="js/modules/algorithm/metrics.js"></script>
+  <script src="js/modules/algorithm/constraints/c1_eviter.js"></script>
+  <script src="js/modules/algorithm/constraints/c7_affinites.js"></script>
+  <script src="js/modules/algorithm/constraints/c8_breton.js"></script>
+  <script src="js/modules/algorithm/constraints/c2_bep.js"></script>
+  <script src="js/modules/algorithm/constraints/c3_niveau.js"></script>
+  <script src="js/modules/algorithm/constraints/c4_sexe.js"></script>
+  <script src="js/modules/algorithm/constraints/c5_ecole.js"></script>
+  <script src="js/modules/algorithm/constraints/c6_secteur.js"></script>
+  <script src="js/modules/algorithm/engine.js"></script>
+  <!-- Pas de Web Worker : Chrome/Edge refusent d'en créer un depuis une
+       page ouverte en file:// (§7.1). engine.js s'exécute directement
+       ici, en fonction asynchrone qui cède la main au navigateur entre
+       les phases (voir le commentaire en tête d'engine.js). -->
+
+  <script src="js/modules/ui/progressBar.js"></script>
+  <script src="js/modules/ui/modals.js"></script>
+  <script src="js/modules/ui/studentCard.js"></script>
+  <script src="js/modules/ui/summaryBanner.js"></script>
+  <script src="js/modules/ui/conflictsPanel.js"></script>
+  <script src="js/modules/ui/newStudentForm.js"></script>
+  <script src="js/modules/ui/classBoard.js"></script>
+
+  <script src="js/modules/storage/localStorageAdapter.js"></script>
+  <script src="js/modules/storage/jsonBackup.js"></script>
+  <script src="js/modules/export/excelExport.js"></script>
+  <script src="js/modules/export/csvExport.js"></script>
+  <script src="js/modules/export/logExport.js"></script>
+  <script src="js/modules/ui/logTerminal.js"></script>
+
+  <script src="js/modules/ui/stepImport.js"></script>
+  <script src="js/modules/ui/stepMapping.js"></script>
+  <script src="js/modules/ui/stepVerification.js"></script>
+  <script src="js/modules/ui/stepSettings.js"></script>
+  <script src="js/modules/ui/stepAssignment.js"></script>
+  <script src="js/modules/ui/stepAdjustment.js"></script>
+  <script src="js/modules/ui/stepExport.js"></script>
+
+  <!-- Point d'entrée applicatif : enregistre les étapes et démarre le router -->
+  <script src="js/app.js"></script>
+
+</body>
+</html>
