@@ -1,0 +1,18 @@
+# Données élèves réelles — ne jamais committer de fichier élèves réel.
+# Seul le jeu de test fictif (Star Wars / Harry Potter) est autorisé.
+data/*.xlsx
+data/*.xls
+data/*.csv
+!data/jeu_test_eleves_fictif.xlsx
+
+# Sauvegardes JSON de session (générées par jsonBackup.js, normalement
+# téléchargées par le navigateur hors du dépôt — filet de sécurité au cas
+# où un export atterrirait ici par erreur).
+classesmaker-sauvegarde-*.json
+
+# Fichiers système / éditeur
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
