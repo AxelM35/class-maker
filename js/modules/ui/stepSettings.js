@@ -1,9 +1,9 @@
 /**
  * stepSettings.js
  * ------------------------------------------------------------------
- * Étape 4 du wizard (§5.2, §6.2) : nombre de classes à créer, plafond
- * des groupes d'affinités (règle 3, C7) et activation/pondération des
- * critères pondérables restants (C2, C5, C6).
+ * Étape 5 du wizard (§5.3, §6.2) : nombre de classes à créer et
+ * activation/pondération des critères pondérables restants (C2, C5,
+ * C6).
  * C1 (Eviter), C7 (Affinités), C8 (Breton) ainsi que les trois
  * contraintes dures issues du cahier des charges v3 — effectif ± 2,
  * mixité 40-60 %, écart de niveau ≤ 0,5 (§3.2, règles 5/6/7) — ne sont
@@ -11,6 +11,12 @@
  * C3 (niveau) et C4 (mixité) ont été retirés des critères pondérables
  * car ils sont désormais appliqués comme contraintes dures (Phase 3,
  * engine.js) plutôt que comme un simple critère pondéré optionnel.
+ *
+ * Le plafond des groupes d'affinités mono-école (règle 3, C7) a migré
+ * vers l'étape Clusters (§5.2, v2.0) : il agit sur la CONSTRUCTION des
+ * clusters, qui a désormais lieu avant cette étape (le wizard passe de
+ * import → mapping → vérification → clusters → paramétrage...) — le
+ * régler ici n'aurait plus d'effet visible.
  * ------------------------------------------------------------------
  */
 
@@ -35,19 +41,6 @@ function renderSettingsStep(container) {
         <input type="number" id="nb-classes" min="2" max="12" value="${state.settings.nbClasses}" />
       </label>
       ${bretonCount > 0 ? `<p class="step__hint">${bretonCount} élève(s) bilingue Breton → une classe sera désignée automatiquement (§4, C8).</p>` : ""}
-    </div>
-
-    <div class="settings-block">
-      <label class="settings-field">
-        <span>Plafond d'un groupe d'affinités mono-école (C7, règle 3)</span>
-        <input type="number" id="cluster-cap" min="4" max="15" value="${state.settings.clusterCapPerSchool}" />
-      </label>
-      <p class="step__hint">
-        Au-delà de ce nombre d'élèves d'une même école dans un même groupe d'affinités, un vœu
-        supplémentaire n'est plus honoré automatiquement — sauf s'il crée un pont vers une autre
-        école (règle 4, cahier des charges v3), auquel cas ce plafond ne s'applique plus au groupe
-        fusionné. Chaque élève garde toujours au moins un vœu satisfait (règle 2).
-      </p>
     </div>
 
     <div class="settings-block">
@@ -81,14 +74,6 @@ function renderSettingsStep(container) {
     const n = parseInt(nbClassesInput.value, 10);
     if (Number.isInteger(n) && n >= 2 && n <= 12) {
       state.settings.nbClasses = n;
-    }
-  });
-
-  const clusterCapInput = wrapper.querySelector("#cluster-cap");
-  clusterCapInput.addEventListener("input", () => {
-    const n = parseInt(clusterCapInput.value, 10);
-    if (Number.isInteger(n) && n >= 4 && n <= 15) {
-      state.settings.clusterCapPerSchool = n;
     }
   });
 
@@ -129,7 +114,7 @@ function renderSettingsStep(container) {
   });
 }
 
-/** Construit state.classes à partir de settings.nbClasses (§5.2). */
+/** Construit state.classes à partir de settings.nbClasses (§5.3). */
 function buildClasses() {
   const n = state.settings.nbClasses;
   const bretonCount = state.students.filter((s) => s.breton === 1).length;

@@ -47,6 +47,7 @@ async function renderAssignmentStep(container) {
         students: state.students,
         classes: state.classes,
         settings: state.settings,
+        clusters: state.clusters,
       },
       (label, percent) => progress.update(label, percent)
     );

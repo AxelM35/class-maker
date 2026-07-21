@@ -1,44 +1,31 @@
 /**
  * c8_breton.js
  * ------------------------------------------------------------------
- * Phase 0 de l'algorithme (§4, C8 — priorité absolue, avant tout autre
- * critère) : les élèves marqués Breton=1 doivent tous être placés dans
- * UNE seule classe désignée bilingue, et y être verrouillés (locked)
- * avant que les autres contraintes n'entrent en jeu.
+ * C8 — priorité absolue (§4) : les élèves marqués Breton=1 doivent tous
+ * être placés dans UNE seule classe désignée bilingue, et y être
+ * verrouillés (locked).
+ *
+ * Cahier des charges v2.0, H10 (point ouvert résolu) : depuis l'étape
+ * Clusters (§5.2), les élèves bretonnants forment déjà un unique
+ * cluster (mergeBretonCluster, c7_affinites.js) avant même le
+ * lancement de la répartition. La Phase 0 dédiée (pré-placement fixe,
+ * séparée de la Phase 1) devient donc redondante avec le placement de
+ * ce cluster : engine.js la fusionne dans la Phase 1 en plaçant ce
+ * cluster en priorité, avec verrouillage. Ce module ne fait donc plus
+ * que désigner la classe bilingue — le placement/verrouillage est géré
+ * par engine.js au moment où il traite ce cluster comme n'importe quel
+ * autre, avec une contrainte de destination fixe en plus.
  * ------------------------------------------------------------------
  */
 
 /**
- * Désigne la classe bilingue et y place tous les élèves Breton=1.
- * Si aucune classe n'est déjà marquée `isBilingue` dans la config,
- * la première classe de la liste est utilisée par défaut.
- *
- * @param {import('../../../state.js').Student[]} students
+ * Désigne la classe bilingue à partir de la configuration des classes.
+ * Si aucune classe n'est déjà marquée `isBilingue`, la première classe
+ * de la liste est utilisée par défaut.
  * @param {import('../../../state.js').ClasseConfig[]} classes
- * @returns {string} l'id de la classe bilingue retenue
+ * @returns {string|null} l'id de la classe bilingue retenue, ou null si aucune classe n'existe
  */
-function applyBretonConstraint(students, classes) {
-  const bretonStudents = students.filter((s) => s.breton === 1);
-
-  if (bretonStudents.length === 0) {
-    logInfo("C8 (Breton) : aucun élève concerné, phase ignorée.");
-    return null;
-  }
-
+function designateBilingualClass(classes) {
   const designated = classes.find((c) => c.isBilingue) ?? classes[0];
-  if (!designated) {
-    logWarn("C8 (Breton) : aucune classe disponible pour l'accueil des élèves bilingues.");
-    return null;
-  }
-
-  for (const student of bretonStudents) {
-    student.classeId = designated.id;
-    student.locked = true;
-  }
-
-  logInfo(
-    `C8 (Breton) : ${bretonStudents.length} élève(s) placé(s) et verrouillé(s) dans la classe "${designated.nom}".`
-  );
-
-  return designated.id;
+  return designated ? designated.id : null;
 }

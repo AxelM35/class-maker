@@ -3,10 +3,16 @@
  * ------------------------------------------------------------------
  * Orchestrateur de l'algorithme de répartition (§4) :
  *
- *   Phase 0 — C8 (Breton)      : placement + verrouillage absolu
- *   Phase 1 — C1 + C7          : clusters d'affinités placés comme des
- *                                 unités indivisibles, sans jamais violer
- *                                 C1 (Eviter, absolu)
+ *   Phase 1 — C7 + C8          : clusters constitués/ajustés à l'étape
+ *                                 Clusters (§5.2) reçus en entrée et
+ *                                 placés comme des unités indivisibles,
+ *                                 sans jamais violer C1 (Eviter,
+ *                                 absolu). Le cluster Breton (C8, déjà
+ *                                 fusionné à l'étape Clusters) est placé
+ *                                 en priorité, verrouillé, dans la
+ *                                 classe bilingue désignée — cahier des
+ *                                 charges v2.0, H10 résolu : plus de
+ *                                 Phase 0 séparée, fusionnée ici.
  *   Phase 2 — C2, C3, C4, C5, C6 : optimisation résiduelle par
  *                                 permutations de clusters entiers entre
  *                                 classes (ne casse jamais C1 ni C7)
@@ -61,6 +67,7 @@ function yieldToUI() {
  * @param {import('../../state.js').Student[]} input.students - élèves confirmés uniquement
  * @param {import('../../state.js').ClasseConfig[]} input.classes
  * @param {import('../../state.js').CriteriaConfig} input.settings
+ * @param {import('../../state.js').Cluster[]} input.clusters - clusters constitués/ajustés à l'étape Clusters (§5.2), unités atomiques de placement
  * @param {(label: string, percent: number) => void} [onProgress]
  * @returns {Promise<{
  *   students: import('../../state.js').Student[],
@@ -69,66 +76,63 @@ function yieldToUI() {
  *   conflicts: Array<Object>
  * }>}
  */
-async function runAssignment({ students, classes, settings }, onProgress = () => {}) {
+async function runAssignment({ students, classes, settings, clusters: inputClusters }, onProgress = () => {}) {
   // Repart d'un état propre à chaque exécution complète (§5.6, relance).
   for (const s of students) {
     s.classeId = null;
     s.locked = false;
   }
 
-  onProgress("Phase 0 : placement des élèves bilingues (C8)", 5);
-  applyBretonConstraint(students, classes);
-  await yieldToUI();
-
   const eviterGraph = buildEviterGraph(students);
   const promoStats = computePromotionStats(students);
   const targetSize = students.length / (classes.length || 1);
   const criteria = settings.criteria;
 
-  onProgress("Phase 1 : constitution des groupes d'affinités (C7)", 15);
-  const placeable = students.filter((s) => !s.locked);
-  const { clusters, report: affinityReport } = buildAffinityClusters(placeable, eviterGraph, {
-    clusterCapPerSchool: settings.clusterCapPerSchool ?? DEFAULT_CLUSTER_CAP_PER_SCHOOL,
-  });
-  clusters.sort((a, b) => b.length - a.length);
+  onProgress("Phase 1 : placement des clusters (C7, C8)", 10);
 
-  logInfo(`Phase 1 : ${clusters.length} groupe(s) d'élèves à placer (dont singletons).`);
-  logInfo(
-    `Phase 1 : plafond de cluster par école fixé à ${affinityReport.clusterCapPerSchool} (cahier des charges v3, règle 3).`
-  );
+  const clusterList = inputClusters.map((c) => c.memberIds).filter((ids) => ids.length > 0);
+  clusterList.sort((a, b) => b.length - a.length);
 
   const conflicts = [];
 
-  // Garde-fou humain (cahier des charges v3, §4.2/§5) : remonter les
-  // groupes fusionnés par pont inter-écoles (règle 4, sans limite haute)
-  // et les cas où le plancher C7 (règle 2) a nécessité de lever le
-  // plafond par école (règle 3), pour validation par un adulte référent.
-  if (affinityReport.bridgedClusters.length > 0) {
-    logInfo(
-      `Phase 1 : ${affinityReport.bridgedClusters.length} groupe(s) fusionné(s) par pont inter-écoles (règle 4) — plafond non appliqué à ces groupes.`
-    );
+  // C8 (Breton, §4) — H10 résolu (cahier des charges v2.0) : les élèves
+  // bretonnants forment déjà un unique cluster dès l'étape Clusters
+  // (mergeBretonCluster, c7_affinites.js). Plus besoin d'une Phase 0
+  // séparée : on place ce cluster en priorité, verrouillé, dans la
+  // classe bilingue désignée, puis on l'exclut du reste du traitement
+  // (Phases 1-4) exactement comme le faisait l'ancienne Phase 0 en
+  // excluant les élèves verrouillés de `placeable`.
+  const bretonClusterIndex = clusterList.findIndex((ids) =>
+    ids.some((id) => students.find((s) => s.tNum === id)?.breton === 1)
+  );
+
+  let clusters = clusterList;
+  if (bretonClusterIndex !== -1) {
+    const bretonCluster = clusterList[bretonClusterIndex];
+    const bilingualClassId = designateBilingualClass(classes);
+
+    if (bilingualClassId) {
+      for (const id of bretonCluster) {
+        const student = students.find((s) => s.tNum === id);
+        if (student) {
+          student.classeId = bilingualClassId;
+          student.locked = true;
+        }
+      }
+      const bilingualClass = classes.find((c) => c.id === bilingualClassId);
+      logInfo(
+        `C8 (Breton) : ${bretonCluster.length} élève(s) placé(s) et verrouillé(s) dans la classe "${bilingualClass?.nom ?? bilingualClassId}".`
+      );
+      clusters = clusterList.filter((_, i) => i !== bretonClusterIndex);
+    } else {
+      logWarn("C8 (Breton) : aucune classe disponible pour l'accueil des élèves bilingues — cluster traité comme les autres.");
+    }
   }
-  for (const bridged of affinityReport.bridgedClusters) {
-    conflicts.push({
-      type: "AFFINITY_BRIDGE_FUSION",
-      severity: "info",
-      studentIds: bridged,
-      message: `Groupe de ${bridged.length} élève(s) fusionné via un pont inter-écoles (plafond de ${affinityReport.clusterCapPerSchool}/école non appliqué, règle 4) — à valider.`,
-    });
-  }
-  for (const override of affinityReport.floorOverrides) {
-    conflicts.push({
-      type: "AFFINITY_FLOOR_OVERRIDE",
-      severity: "info",
-      studentIds: [override.fromId, override.toId],
-      message: `Plancher C7 (règle 2) garanti pour T#${override.fromId} malgré le plafond par école dépassé (règle 3 levée pour ce vœu) — à valider.`,
-    });
-  }
-  if (affinityReport.cappedLinks.length > 0) {
-    logInfo(
-      `Phase 1 : ${affinityReport.cappedLinks.length} vœu(x) d'affinité non honoré(s) (plafond par école atteint, élève déjà satisfait par un autre vœu par ailleurs).`
-    );
-  }
+
+  await yieldToUI();
+
+  logInfo(`Phase 1 : ${clusters.length} groupe(s) d'élèves à placer (dont singletons).`);
+
   let clustersPlaced = 0;
 
   for (const cluster of clusters) {
@@ -177,7 +181,7 @@ async function runAssignment({ students, classes, settings }, onProgress = () =>
 
     clustersPlaced += 1;
     if (clustersPlaced % 10 === 0) {
-      const pct = 15 + Math.round((clustersPlaced / clusters.length) * 40);
+      const pct = 10 + Math.round((clustersPlaced / clusters.length) * 45);
       onProgress("Phase 1 : placement des groupes", pct);
       await yieldToUI();
     }

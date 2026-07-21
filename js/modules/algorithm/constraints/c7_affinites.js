@@ -258,3 +258,64 @@ function isAffinitySatisfied(student, allStudents) {
 function findUnsatisfiedAffinities(students) {
   return students.filter((s) => !isAffinitySatisfied(s, students));
 }
+
+/**
+ * Étape Clusters (§5.2) : regroupe de force tous les clusters contenant
+ * au moins un élève `Breton = 1` en un seul et même cluster (C8), sans
+ * dépendre d'une classe déjà désignée — contrairement à
+ * designateBilingualClass (c8_breton.js), qui n'intervient que plus
+ * tard, au moment du placement effectif par engine.js. S'il n'y a
+ * aucun élève bretonnant, ou qu'ils sont déjà tous dans un seul cluster
+ * (via un vœu d'affinité commun), la liste des clusters est retournée
+ * inchangée.
+ * @param {number[][]} clusters - tel que renvoyé par buildAffinityClusters
+ * @param {import('../../../state.js').Student[]} students
+ * @returns {number[][]}
+ */
+function mergeBretonCluster(clusters, students) {
+  const bretonIds = new Set(students.filter((s) => s.breton === 1).map((s) => s.tNum));
+  if (bretonIds.size === 0) return clusters;
+
+  const untouched = [];
+  const toMerge = [];
+  for (const cluster of clusters) {
+    if (cluster.some((id) => bretonIds.has(id))) {
+      toMerge.push(cluster);
+    } else {
+      untouched.push(cluster);
+    }
+  }
+
+  if (toMerge.length <= 1) return clusters;
+
+  return [...untouched, toMerge.flat()];
+}
+
+/**
+ * Étape Clusters (§5.2) : identifie les élèves à placer en zone
+ * brouillon — un conflit C1 (Eviter) contre C7 (Affinités) que
+ * buildAffinityClusters n'a pas pu résoudre automatiquement. Après ses
+ * deux passes, le seul cas résiduel possible est un élève resté seul
+ * dans son propre cluster alors qu'il a un ou plusieurs vœux réels
+ * (non exempté, non vide) : tout vœu compatible avec C1 aurait déjà été
+ * honoré par le plancher garanti de la passe 2. Un élève sans vœu
+ * (exempté ou `affinitesIds` vide) qui se retrouve seul est un cas
+ * normal (§5.2 : "élève sans affinité valide = cluster à un membre"),
+ * pas un conflit — il n'est jamais candidat au brouillon.
+ * @param {number[][]} clusters
+ * @param {import('../../../state.js').Student[]} students
+ * @returns {number[]} tNum des élèves candidats à la zone brouillon
+ */
+function findDraftCandidates(clusters, students) {
+  const studentById = new Map(students.map((s) => [s.tNum, s]));
+
+  const candidates = [];
+  for (const cluster of clusters) {
+    if (cluster.length !== 1) continue;
+    const student = studentById.get(cluster[0]);
+    if (!student) continue;
+    if (student.affinitesExempted || student.affinitesIds.length === 0) continue;
+    candidates.push(student.tNum);
+  }
+  return candidates;
+}

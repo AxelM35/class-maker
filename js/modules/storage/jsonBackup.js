@@ -25,6 +25,8 @@ function buildFullBackup() {
     students: state.students,
     unconfirmedStudents: state.unconfirmedStudents,
     validationIssues: state.validationIssues,
+    clusters: state.clusters,
+    draftStudentIds: state.draftStudentIds,
     classes: state.classes,
     settings: state.settings,
     conflicts: state.conflicts,
@@ -83,6 +85,8 @@ function applySessionBackup(backup) {
   state.students = backup.students ?? [];
   state.unconfirmedStudents = backup.unconfirmedStudents ?? [];
   state.validationIssues = backup.validationIssues ?? [];
+  state.clusters = backup.clusters ?? [];
+  state.draftStudentIds = backup.draftStudentIds ?? [];
   state.classes = backup.classes ?? [];
   state.settings = backup.settings ?? state.settings;
   state.conflicts = backup.conflicts ?? [];

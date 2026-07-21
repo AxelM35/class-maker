@@ -218,6 +218,134 @@
   font-size: 13px;
 }
 
+/* ---- Étape Clusters ---- */
+
+.clusters-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.cluster-block {
+  flex: 0 0 260px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+}
+
+.cluster-block.is-drop-target {
+  border-color: var(--color-rule-red);
+  background: var(--color-rule-red-soft);
+}
+
+.cluster-block__header {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.cluster-block__title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.cluster-block__list {
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 40px;
+}
+
+.cluster-block--new {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80px;
+  border-style: dashed;
+  background: transparent;
+}
+
+.cluster-block__new-hint {
+  margin: 0;
+  padding: var(--space-3);
+  color: var(--color-slate);
+  font-size: 12px;
+  text-align: center;
+}
+
+.cluster-member {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 2px var(--space-2);
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  font-size: 11px;
+  cursor: grab;
+}
+
+.cluster-member.is-dragging {
+  opacity: 0.4;
+}
+
+.cluster-member__name {
+  grid-column: 2;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.cluster-member__sexe {
+  grid-column: 3;
+  color: var(--color-slate);
+}
+
+.cluster-member__ecole,
+.cluster-member__niveaux,
+.cluster-member__dispositif {
+  grid-column: 2 / span 2;
+  color: var(--color-ink-soft);
+}
+
+.draft-zone {
+  min-height: 60px;
+  padding: var(--space-3);
+  border: 2px dashed var(--color-amber);
+  border-radius: var(--radius-md);
+  background: var(--color-amber-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.draft-zone.is-drop-target {
+  border-color: var(--color-rule-red);
+}
+
+.draft-zone .cluster-member {
+  flex: 0 0 240px;
+}
+
+.draft-zone__empty {
+  margin: 0;
+  color: var(--color-chalk-green);
+  font-size: 13px;
+}
+
+.school-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
 /* ---- Réglages (settings) ---- */
 
 .settings-block {
