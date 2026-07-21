@@ -9,15 +9,25 @@
  *
  *   Règle 1 — Eviter (C1) prime toujours : on ne fusionne jamais deux
  *             élèves si cela crée un conflit "à éviter" interne.
- *   Règle 2 — Plancher individuel : chaque élève doit obtenir AU MOINS
- *             un vœu satisfait, sans jamais retirer un vœu déjà acquis
- *             par un autre élève (une fusion ne fait qu'agrandir un
- *             cluster, elle n'en retire jamais un membre : le
- *             repêchage de la règle 2 ne peut donc désavantager
- *             personne).
+ *   Règle 2 — Plancher individuel, BEST EFFORT (cahier des charges
+ *             v2.0, révisé) : chaque élève DEVRAIT obtenir au moins un
+ *             vœu satisfait, mais jamais au prix de dépasser le
+ *             plafond de la règle 3. Si le seul moyen de satisfaire ce
+ *             plancher est de fusionner deux clusters qui feraient
+ *             dépasser le plafond (hors pont inter-écoles légitime,
+ *             règle 4), l'élève reste dans son cluster tel quel : il
+ *             est alors candidat à la zone brouillon de l'étape
+ *             Clusters (§5.2, findDraftCandidates), pour un arbitrage
+ *             manuel plutôt qu'une fusion automatique. Avant la v2.0,
+ *             ce plancher primait sur le plafond (une "passe 2"
+ *             fusionnait de force) — abandonné : sur un fichier réel
+ *             avec un réseau d'amitiés dense au sein d'une école, ces
+ *             fusions en cascade produisaient des clusters de 20+
+ *             élèves, largement au-delà de l'intention de la règle 3.
  *   Règle 3 — Plafond de taille par école : un cluster composé d'une
  *             seule école ne dépasse pas `clusterCapPerSchool` (6 à 7,
- *             paramétrable, §5.2) élèves.
+ *             paramétrable, §5.2) élèves. Prime désormais sur la
+ *             règle 2 (voir ci-dessus).
  *   Règle 4 — Fusion inter-écoles, PONTS ISOLÉS : dès qu'un vœu relie
  *             deux élèves de deux écoles différentes, les deux
  *             clusters concernés fusionnent en un seul, sans plafond
@@ -30,17 +40,14 @@
  *             cluster figé, le plafond de la règle 3 continue de
  *             s'appliquer normalement partout ailleurs.
  *
- * Stratégie : Union-Find en deux passes.
- *   Passe 1 : on parcourt tous les vœux et on fusionne au fil de l'eau,
- *             en respectant les règles 1, 3 et 4 ci-dessus. Un cluster
- *             déjà figé (règle 4) refuse toute nouvelle fusion, quelle
- *             qu'en soit la nature. Les vœux refusés (plafond atteint
- *             ou cluster figé) sont mémorisés.
- *   Passe 2 : pour les élèves qui, à l'issue de la passe 1, n'ont
- *             encore aucun vœu satisfait, on relève le plafond ET le
- *             gel (règle 2 prévaut alors sur les règles 3 et 4) et on
- *             tente de les rattacher via l'un de leurs vœux
- *             précédemment refusés, dans l'ordre où ils apparaissent.
+ * Stratégie : Union-Find en une seule passe. On parcourt tous les vœux
+ * et on fusionne au fil de l'eau, en respectant les règles 1, 3 et 4
+ * ci-dessus. Un cluster déjà figé (règle 4) refuse toute nouvelle
+ * fusion, quelle qu'en soit la nature. Les vœux refusés (plafond
+ * atteint ou cluster figé) sont mémorisés dans `report.cappedLinks`,
+ * à titre informatif — ils ne sont PLUS honorés de force (voir règle 2
+ * ci-dessus) : les élèves concernés restent candidats à la zone
+ * brouillon de l'étape Clusters (§5.2, findDraftCandidates).
  *
  * engine.js place ensuite chaque cluster comme une unité indivisible
  * (Phase 1), ce qui garantit la satisfaction de C7 pour tous les
@@ -83,8 +90,7 @@ class UnionFind {
  *     clusterCapPerSchool: number,
  *     bridgeLinks: Array<{fromId: number, toId: number, ecoleA: string, ecoleB: string}>,
  *     bridgedClusters: number[][],
- *     cappedLinks: Array<{fromId: number, toId: number, attemptedSize: number, ecole: string, reason: string}>,
- *     floorOverrides: Array<{fromId: number, toId: number, attemptedSize: number, ecole: string, reason: string}>
+ *     cappedLinks: Array<{fromId: number, toId: number, attemptedSize: number, ecole: string, reason: string}>
  *   }
  * }}
  */
@@ -166,28 +172,6 @@ function buildAffinityClusters(students, eviterGraph, options = {}) {
     }
   }
 
-  // --- Passe 2 : plancher garanti (règle 2 prévaut sur les règles 3 & 4) --
-  const floorOverrides = [];
-  for (const link of cappedLinks) {
-    const student = studentById.get(link.fromId);
-    if (!student) continue;
-    if (uf.find(link.fromId) === uf.find(link.toId)) continue; // déjà réuni entre-temps (autre vœu)
-    if (isAffinitySatisfiedInClusters(student, uf, studentById)) continue; // a déjà un vœu satisfait ailleurs
-
-    const clusterA = clusterMembers(link.fromId);
-    const clusterB = clusterMembers(link.toId);
-    const merged = [...clusterA, ...clusterB];
-
-    if (groupHasInternalConflict(merged, eviterGraph)) continue; // Règle 1 reste absolue, même pour le plancher
-
-    uf.union(link.fromId, link.toId);
-    floorOverrides.push({
-      ...link,
-      reason:
-        "Plancher C7 (règle 2) garanti malgré le plafond ou le gel de cluster (règles 3/4) — aucun autre élève n'est désavantagé par cette fusion.",
-    });
-  }
-
   const clustersByRoot = new Map();
   for (const id of allIds) {
     const root = uf.find(id);
@@ -196,7 +180,6 @@ function buildAffinityClusters(students, eviterGraph, options = {}) {
   }
   const clusters = [...clustersByRoot.values()];
 
-  const overriddenKeys = new Set(floorOverrides.map((o) => `${o.fromId}-${o.toId}`));
   const schoolsOf = (ids) => new Set(ids.map((id) => studentById.get(id)?.ecole).filter(Boolean));
 
   return {
@@ -205,28 +188,9 @@ function buildAffinityClusters(students, eviterGraph, options = {}) {
       clusterCapPerSchool: clusterCap,
       bridgeLinks,
       bridgedClusters: clusters.filter((c) => schoolsOf(c).size > 1),
-      cappedLinks: cappedLinks.filter((l) => !overriddenKeys.has(`${l.fromId}-${l.toId}`)),
-      floorOverrides,
+      cappedLinks,
     },
   };
-}
-
-/**
- * Variante de isAffinitySatisfied (voir plus bas) utilisable PENDANT la
- * construction des clusters, avant tout placement en classe : on
- * compare l'appartenance au même cluster (Union-Find) plutôt qu'à la
- * même classe.
- * @param {import('../../../state.js').Student} student
- * @param {UnionFind} uf
- * @param {Map<number, import('../../../state.js').Student>} studentById
- * @returns {boolean}
- */
-function isAffinitySatisfiedInClusters(student, uf, studentById) {
-  if (student.affinitesExempted || student.affinitesIds.length === 0) return true;
-  return student.affinitesIds.some((targetId) => {
-    const target = studentById.get(targetId);
-    return target && uf.find(student.tNum) === uf.find(targetId);
-  });
 }
 
 /**
@@ -249,9 +213,11 @@ function isAffinitySatisfied(student, allStudents) {
 
 /**
  * Recense tous les élèves dont aucun vœu n'a pu être satisfait, pour
- * remontée dans le panneau de conflits (§5.4). Après la passe 2 de
- * buildAffinityClusters, cette liste ne devrait plus contenir que des
- * élèves dont TOUS les vœux entraient en conflit avec C1 (Eviter).
+ * remontée dans le panneau de conflits (§5.4) une fois le placement en
+ * classes effectué. En amont, à l'étape Clusters, ce sont ces mêmes
+ * élèves (candidats à la zone brouillon) que findDraftCandidates
+ * identifie sur les clusters plutôt que sur les classes — voir
+ * DEFAULT_CLUSTER_CAP_PER_SCHOOL et la révision v2.0 ci-dessus.
  * @param {import('../../../state.js').Student[]} students
  * @returns {import('../../../state.js').Student[]}
  */
@@ -293,29 +259,36 @@ function mergeBretonCluster(clusters, students) {
 
 /**
  * Étape Clusters (§5.2) : identifie les élèves à placer en zone
- * brouillon — un conflit C1 (Eviter) contre C7 (Affinités) que
- * buildAffinityClusters n'a pas pu résoudre automatiquement. Après ses
- * deux passes, le seul cas résiduel possible est un élève resté seul
- * dans son propre cluster alors qu'il a un ou plusieurs vœux réels
- * (non exempté, non vide) : tout vœu compatible avec C1 aurait déjà été
- * honoré par le plancher garanti de la passe 2. Un élève sans vœu
- * (exempté ou `affinitesIds` vide) qui se retrouve seul est un cas
- * normal (§5.2 : "élève sans affinité valide = cluster à un membre"),
- * pas un conflit — il n'est jamais candidat au brouillon.
+ * brouillon — un vœu C7 (Affinités) qu'aucune fusion automatique n'a pu
+ * honorer sans violer C1 (Eviter) ou dépasser le plafond mono-école
+ * (règle 3, cahier des charges v2.0 : la règle 2 ne prime plus sur la
+ * règle 3, voir l'en-tête du fichier). Un élève est candidat dès que
+ * TOUS ses vœux réels (non exemptés, non vides) restent non satisfaits
+ * dans le cluster où il se trouve — qu'il y soit seul, ou qu'il ait été
+ * entraîné dans un cluster plus grand par le vœu (satisfait) d'un
+ * autre élève sans que le sien le soit en retour. Un élève sans vœu
+ * (exempté ou `affinitesIds` vide) est un cas normal (§5.2 : "élève
+ * sans affinité valide = cluster à un membre"), jamais candidat au
+ * brouillon.
  * @param {number[][]} clusters
  * @param {import('../../../state.js').Student[]} students
  * @returns {number[]} tNum des élèves candidats à la zone brouillon
  */
 function findDraftCandidates(clusters, students) {
-  const studentById = new Map(students.map((s) => [s.tNum, s]));
+  const clusterOf = new Map();
+  for (const cluster of clusters) {
+    for (const id of cluster) clusterOf.set(id, cluster);
+  }
 
   const candidates = [];
-  for (const cluster of clusters) {
-    if (cluster.length !== 1) continue;
-    const student = studentById.get(cluster[0]);
-    if (!student) continue;
+  for (const student of students) {
     if (student.affinitesExempted || student.affinitesIds.length === 0) continue;
-    candidates.push(student.tNum);
+
+    const cluster = clusterOf.get(student.tNum);
+    if (!cluster) continue;
+
+    const satisfied = student.affinitesIds.some((targetId) => cluster.includes(targetId));
+    if (!satisfied) candidates.push(student.tNum);
   }
   return candidates;
 }

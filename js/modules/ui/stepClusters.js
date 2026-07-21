@@ -153,7 +153,7 @@ function renderClustersStep(container) {
     }
     if (report.cappedLinks.length > 0) {
       logInfo(
-        `Étape Clusters : ${report.cappedLinks.length} vœu(x) d'affinité non honoré(s) (plafond mono-école atteint, élève déjà satisfait par ailleurs).`
+        `Étape Clusters : ${report.cappedLinks.length} vœu(x) d'affinité non honoré(s) automatiquement (plafond mono-école atteint ou groupe déjà figé par un pont inter-écoles) — certains élèves concernés peuvent nécessiter un arbitrage manuel en zone brouillon.`
       );
     }
 
@@ -171,8 +171,13 @@ function renderClustersStep(container) {
     const draftIds = findDraftCandidates(merged, state.students);
     const draftSet = new Set(draftIds);
 
+    // Un candidat brouillon est retiré de son cluster, qu'il y soit seul
+    // ou qu'il ait été entraîné dedans par le vœu (satisfait) d'un autre
+    // élève sans que le sien le soit en retour (§5.2 — voir
+    // findDraftCandidates, cahier des charges v2.0).
     state.clusters = merged
-      .filter((ids) => !(ids.length === 1 && draftSet.has(ids[0])))
+      .map((ids) => ids.filter((id) => !draftSet.has(id)))
+      .filter((ids) => ids.length > 0)
       .map((ids) => ({ id: makeClusterId(), memberIds: ids }));
     state.draftStudentIds = draftIds;
 
