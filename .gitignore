@@ -10,6 +10,10 @@ data/*.csv
 # où un export atterrirait ici par erreur).
 classesmaker-sauvegarde-*.json
 
+# Outillage de test/CI (package.json) — jamais requis pour exécuter
+# l'application elle-même, voir package.json et .github/workflows/ci.yml
+node_modules/
+
 # Fichiers système / éditeur
 .DS_Store
 Thumbs.db
