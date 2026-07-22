@@ -12,9 +12,17 @@ DÉMARRAGE EN 3 ÉTAPES
    (Chrome, Edge, Firefox...). Aucune installation, aucun serveur,
    aucune connexion Internet n'est nécessaire.
 
-3. Suivre les 7 étapes du parcours affiché en haut de l'écran :
-   Import → Mapping colonnes → Vérification → Paramétrage →
+3. Suivre les 8 étapes du parcours affiché en haut de l'écran :
+   Import → Mapping colonnes → Vérification → Clusters → Paramétrage →
    Répartition → Ajustement → Export.
+
+   L'étape "Clusters" affiche les groupes d'élèves liés par affinité
+   mutuelle (chaque groupe sera placé comme un bloc indivisible dans une
+   seule classe) et permet de les ajuster à la main avant de lancer la
+   répartition. Une zone brouillon, en colonne à gauche, y rassemble les
+   élèves dont un vœu d'affinité entre en conflit avec une consigne "à
+   éviter" — ils doivent être raccrochés manuellement à un groupe avant
+   de pouvoir continuer.
 
 Un jeu de données de test est disponible dans data/ si vous souhaitez
 essayer l'application avant de traiter votre propre fichier.
@@ -80,11 +88,14 @@ STRUCTURE DU PROJET (pour information)
   css/                     Styles (identité visuelle "registre scolaire")
   js/                      Code de l'application
     state.js                État global partagé par tous les écrans
-    router.js                Navigation entre les 7 étapes
+    router.js                Navigation entre les 8 étapes
     modules/import/          Lecture et validation du fichier Excel
     modules/matching/        Résolution des noms (Affinités / Eviter)
-    modules/algorithm/        Moteur de répartition
+    modules/algorithm/        Moteur de répartition (consomme les groupes
+                               constitués à l'étape Clusters)
     modules/ui/               Écrans du wizard, composants d'interface
+                               (dont stepClusters.js, la carte élève et
+                               le code couleur par école, schoolColor.js)
     modules/storage/          Sauvegarde de session (local + JSON)
     modules/export/           Génération des fichiers de sortie
   lib/                     Bibliothèque SheetJS (voir plus haut)
