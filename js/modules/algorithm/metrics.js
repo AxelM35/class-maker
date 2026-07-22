@@ -123,7 +123,7 @@ function average(values) {
  * rapport aux statistiques de la promotion et des autres classes
  * (nécessaires pour le calcul du spread BEP et de la moyenne
  * d'effectif). Retourne un objet directement exploitable par le
- * bandeau de synthèse (§5.5) et par le terminal de log (§5.9).
+ * bandeau de synthèse (§5.6) et par le terminal de log (§5.10).
  * @param {ReturnType<typeof computeClassStats>} classStats
  * @param {ReturnType<typeof computePromotionStats>} promoStats
  * @param {ReturnType<typeof computeClassStats>[]} allClassStats

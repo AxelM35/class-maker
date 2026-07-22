@@ -237,7 +237,7 @@ function validateDispositif(student, issues) {
 }
 
 // ---------------------------------------------------------------------
-// Résolution des références croisées (§3.2, §5.1, §5.10)
+// Résolution des références croisées (§3.2, §5.1)
 // ---------------------------------------------------------------------
 
 function resolveAffinites(student, confirmedIndex, unconfirmedIndex, issues) {

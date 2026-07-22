@@ -7,7 +7,7 @@
  *
  * Usage :
  *   makeDraggable(cardEl, { studentId })
- *   makeDropZone(columnEl, { classeId }, (payload, targetClasseId) => {...})
+ *   makeDropZone(columnEl, (payload) => {...})
  * ------------------------------------------------------------------
  */
 

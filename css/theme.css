@@ -65,7 +65,7 @@
 }
 
 /* ---- Impression (fallback minimal si l'utilisateur imprime la page) ----
-   L'export officiel se fait via le fichier Excel (§5.7) ; ceci n'est
+   L'export officiel se fait via le fichier Excel (§5.8) ; ceci n'est
    qu'un filet de sécurité pour un Ctrl+P impromptu. */
 @media print {
   .wizard-nav,

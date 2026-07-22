@@ -1,7 +1,7 @@
 /**
  * stepAssignment.js
  * ------------------------------------------------------------------
- * Étape 5 du wizard (§6.2, §7.2) : lance l'algorithme de répartition
+ * Étape 6 du wizard (§6.2, §7.2) : lance l'algorithme de répartition
  * et affiche la progression en temps réel, puis fusionne le résultat
  * dans state.students avant de passer à l'étape d'ajustement.
  *

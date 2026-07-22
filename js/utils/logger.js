@@ -1,25 +1,25 @@
 /**
  * logger.js
  * ------------------------------------------------------------------
- * Formatage et émission des lignes du terminal de log temps réel (§5.9).
+ * Formatage et émission des lignes du terminal de log temps réel (§5.10).
  * Ce module ne dessine rien à l'écran (ce sera le rôle de
  * modules/ui/logTerminal.js) : il centralise juste la création
  * d'entrées de log normalisées et leur écriture dans state.logs.
  *
- * Niveaux (§5.9) : INFO / OK / WARN / ERROR / DEBUG
+ * Niveaux (§5.10) : INFO / OK / WARN / ERROR / DEBUG
  * ------------------------------------------------------------------
  */
 
 const LOG_LEVELS = ["INFO", "OK", "WARN", "ERROR", "DEBUG"];
 
-/** Le niveau DEBUG est masqué par défaut (activable par l'utilisateur, §5.9) */
+/** Le niveau DEBUG est masqué par défaut (activable par l'utilisateur, §5.10) */
 let debugEnabled = false;
 
 /** Abonnés notifiés à chaque nouvelle ligne (ex. logTerminal.js pour le rendu live) */
 const listeners = new Set();
 
 /**
- * Formate l'heure courante au format HH:MM:SS.mmm (§5.9)
+ * Formate l'heure courante au format HH:MM:SS.mmm (§5.10)
  * @returns {string}
  */
 function formatTimestamp(date = new Date()) {
@@ -62,7 +62,7 @@ const logError = (message, context) => log("ERROR", message, context);
 const logDebug = (message, context) => log("DEBUG", message, context);
 
 /**
- * Active/désactive l'affichage et l'enregistrement des logs DEBUG (§5.9).
+ * Active/désactive l'affichage et l'enregistrement des logs DEBUG (§5.10).
  * @param {boolean} enabled
  */
 function setDebugEnabled(enabled) {
@@ -83,14 +83,14 @@ function onLog(fn) {
   return () => listeners.delete(fn);
 }
 
-/** Vide le terminal de log (bouton "Effacer", §5.9) — ne touche pas à debugEnabled */
+/** Vide le terminal de log (bouton "Effacer", §5.10) — ne touche pas à debugEnabled */
 function clearLogs() {
   state.logs.length = 0;
 }
 
 /**
  * Filtre les logs actuels par niveau(x) et/ou recherche textuelle
- * (barre de filtres §5.9).
+ * (barre de filtres §5.10).
  * @param {{levels?: string[], search?: string}} options
  * @returns {Array}
  */
@@ -110,7 +110,7 @@ function filterLogs({ levels, search } = {}) {
 
 /**
  * Sérialise l'ensemble des logs au format texte pour export .txt
- * (bouton "Exporter les logs", §5.9).
+ * (bouton "Exporter les logs", §5.10).
  * @returns {string}
  */
 function serializeLogs() {

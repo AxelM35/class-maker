@@ -1,7 +1,7 @@
 /**
  * excelExport.js
  * ------------------------------------------------------------------
- * Génère le classeur Excel final (§3.1, §5.7) via SheetJS :
+ * Génère le classeur Excel final (§3.1, §5.8) via SheetJS :
  *   - "Répartition finale" : toutes les colonnes du fichier source
  *     + une colonne Classe, triée par classe puis par NOM
  *   - "Impression Affinités" : pour impression/vérification par les

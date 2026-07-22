@@ -38,7 +38,7 @@
  * @property {string} info.autres       - `Autres`
  * @property {string|null} classeId     - classe actuellement assignée (null = non affecté)
  * @property {boolean} locked           - verrouillage de position (cadenas)
- * @property {boolean} isNew            - ajouté manuellement via le formulaire (§5.8)
+ * @property {boolean} isNew            - ajouté manuellement via le formulaire (§5.9)
  */
 
 /**
@@ -61,7 +61,7 @@
 /**
  * @typedef {Object} CriteriaConfig
  * @property {boolean} enabled
- * @property {number} weight - poids relatif 1-5 (niveaux 2 et 3 uniquement, §5.2)
+ * @property {number} weight - poids relatif 1-5 (niveaux 2 et 3 uniquement, §5.3)
  */
 
 /**
@@ -119,7 +119,7 @@ function createInitialState() {
      */
     draftStudentIds: [],
 
-    /** Paramétrage de la répartition (§5.2) */
+    /** Paramétrage de la répartition (§5.3) */
     settings: {
       nbClasses: 5,
       tailleCible: null, // null = calcul automatique
@@ -151,7 +151,7 @@ function createInitialState() {
     /** @type {LogEntry[]} */
     logs: [],
 
-    /** File d'attente de modales à afficher (§5.10) */
+    /** File d'attente de modales à afficher (§5.11) */
     modalQueue: [],
 
     /** Métadonnées de session */

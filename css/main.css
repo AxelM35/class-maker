@@ -71,7 +71,7 @@
   --color-primary-container: #e0e7ff;
   --color-on-primary: #ffffff;
 
-  /* Couleurs — statuts fonctionnels (§4.3, §5.9) : vert = OK, orange =
+  /* Couleurs — statuts fonctionnels (§4.3, §5.6, §5.10) : vert = OK, orange =
      avertissement, rouge = conflit. Le vert est volontairement distinct
      du vert école St Michel (§6.1) pour éviter toute confusion sur la
      carte élève. */
@@ -84,7 +84,7 @@
   --color-info: #0284c7;
   --color-info-soft: #e0f2fe;
 
-  /* Statuts (bandeau de synthèse, logs — §4.3 / §5.9) */
+  /* Statuts (bandeau de synthèse, logs — §4.3 / §5.6 / §5.10) */
   --status-ok: var(--color-chalk-green);
   --status-warn: var(--color-amber);
   --status-error: var(--color-error);

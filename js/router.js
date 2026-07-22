@@ -5,11 +5,11 @@
  *   import → mapping → verification → clusters → settings
  *   → assignment → adjustment → export
  *
- * Chaque étape est un module qui expose une fonction `render(container)`.
- * Pour l'instant (Étape 1 du développement) les modules d'étape n'existent
- * pas encore : on affiche un placeholder pour valider la navigation.
- * Les vrais modules (js/modules/ui/step*.js) viendront remplacer
- * `renderPlaceholder` étape par étape.
+ * Chaque étape est un module qui expose une fonction `render(container)`,
+ * enregistrée auprès du router via registerStep() (voir app.js pour la
+ * liste complète). renderPlaceholder() ci-dessous reste un filet de
+ * sécurité pour un stepId enregistré dans STEPS mais sans renderer
+ * (ne devrait plus se produire en fonctionnement normal).
  * ------------------------------------------------------------------
  */
 

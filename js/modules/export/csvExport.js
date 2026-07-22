@@ -1,7 +1,7 @@
 /**
  * csvExport.js
  * ------------------------------------------------------------------
- * Export CSV simple de la répartition finale (§5.7) : une ligne par
+ * Export CSV simple de la répartition finale (§5.8) : une ligne par
  * élève, colonnes essentielles uniquement. Alternative légère à
  * l'export Excel, utile pour import dans d'autres logiciels (ENT,
  * logiciel de vie scolaire...).

@@ -1,7 +1,7 @@
 /**
  * newStudentForm.js
  * ------------------------------------------------------------------
- * Formulaire d'ajout manuel d'un élève (§5.8) — cas d'une inscription
+ * Formulaire d'ajout manuel d'un élève (§5.9) — cas d'une inscription
  * tardive après la répartition initiale. L'élève créé n'est affecté
  * à aucune classe (classeId: null) : l'utilisateur le glisse ensuite
  * dans la classe de son choix via classBoard.js.
