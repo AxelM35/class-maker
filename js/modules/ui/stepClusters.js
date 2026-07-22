@@ -133,25 +133,31 @@ function renderClustersStep(container) {
       groupe, ou le faire basculer vers la zone brouillon.
     </p>
 
-    <div class="settings-block">
-      <label class="settings-field">
-        <span>Plafond d'un groupe d'affinités mono-école (C7, règle 3)</span>
-        <input type="number" id="cluster-cap" min="4" max="15" value="${state.settings.clusterCapPerSchool}" />
-      </label>
-      <p class="step__hint">
-        Modifier ce plafond reconstruit automatiquement les groupes (les ajustements manuels déjà faits
-        sont alors perdus, avec confirmation).
-      </p>
+    <div class="clusters-step-layout">
+      <aside class="draft-zone-panel">
+        <h3 class="step__subtitle">Zone brouillon <span id="draft-count"></span></h3>
+        <p class="step__hint">
+          Élèves dont un vœu d'affinité entre en conflit avec une consigne « à éviter » — statut « non
+          affecté » tant qu'ils ne sont pas raccrochés manuellement à un groupe.
+        </p>
+        <div class="draft-zone" id="draft-zone"></div>
+      </aside>
+
+      <div class="clusters-main">
+        <div class="settings-block">
+          <label class="settings-field">
+            <span>Plafond d'un groupe d'affinités mono-école (C7, règle 3)</span>
+            <input type="number" id="cluster-cap" min="4" max="15" value="${state.settings.clusterCapPerSchool}" />
+          </label>
+          <p class="step__hint">
+            Modifier ce plafond reconstruit automatiquement les groupes (les ajustements manuels déjà faits
+            sont alors perdus, avec confirmation).
+          </p>
+        </div>
+
+        <div class="clusters-grid" id="clusters-grid"></div>
+      </div>
     </div>
-
-    <div class="clusters-grid" id="clusters-grid"></div>
-
-    <h3 class="step__subtitle">Zone brouillon <span id="draft-count"></span></h3>
-    <p class="step__hint">
-      Élèves dont un vœu d'affinité entre en conflit avec une consigne « à éviter » — statut « non
-      affecté » tant qu'ils ne sont pas raccrochés manuellement à un groupe.
-    </p>
-    <div class="draft-zone" id="draft-zone"></div>
 
     <div class="step__actions">
       <button class="btn btn--ghost" id="btn-back">← Retour</button>

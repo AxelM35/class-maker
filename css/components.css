@@ -220,6 +220,30 @@
 
 /* ---- Étape Clusters ---- */
 
+.clusters-step-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-5);
+}
+
+.draft-zone-panel {
+  flex: 0 0 340px;
+  position: sticky;
+  top: var(--space-4);
+  max-height: calc(100vh - var(--space-6));
+  overflow-y: auto;
+  padding-right: var(--space-1);
+}
+
+.draft-zone-panel .step__subtitle {
+  margin-top: 0;
+}
+
+.clusters-main {
+  flex: 1;
+  min-width: 0;
+}
+
 .clusters-grid {
   display: flex;
   flex-wrap: wrap;
@@ -316,21 +340,17 @@
   border: 2px dashed var(--color-amber);
   border-radius: var(--radius-md);
   background: var(--color-amber-soft);
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-2);
-  margin-bottom: var(--space-5);
 }
 
 .draft-zone.is-drop-target {
   border-color: var(--color-rule-red);
 }
 
-.draft-zone .cluster-member {
-  flex: 0 0 240px;
-}
-
 .draft-zone__empty {
+  grid-column: 1 / -1;
   margin: 0;
   color: var(--color-chalk-green);
   font-size: 13px;
