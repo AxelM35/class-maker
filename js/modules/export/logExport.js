@@ -1,7 +1,7 @@
 /**
  * logExport.js
  * ------------------------------------------------------------------
- * Export du terminal de log (§5.9) au format .txt — utile pour
+ * Export du terminal de log (§5.10) au format .txt — utile pour
  * conserver une trace de tous les avertissements/erreurs rencontrés
  * pendant le traitement, ou pour les joindre à un signalement.
  * ------------------------------------------------------------------

@@ -2,13 +2,8 @@
  * app.js
  * ------------------------------------------------------------------
  * Point d'entrée de ClassesMaker.
- * Rôle : initialiser l'état, enregistrer les modules d'étape disponibles
+ * Rôle : initialiser l'état, enregistrer les 8 modules d'étape (§6.2)
  * auprès du router, puis démarrer la navigation.
- *
- * À ce stade du développement (Étape 1 — socle applicatif), aucun module
- * d'étape n'est encore écrit : le router affichera donc des placeholders.
- * Chaque étape suivante du plan de développement ajoutera ici un import
- * + un registerStep() correspondant.
  * ------------------------------------------------------------------
  */
 

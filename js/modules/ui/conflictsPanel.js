@@ -1,7 +1,7 @@
 /**
  * conflictsPanel.js
  * ------------------------------------------------------------------
- * Panneau listant les conflits résiduels après répartition (§5.4) :
+ * Panneau listant les conflits résiduels après répartition (§5.5) :
  * violations C1 (ne devrait jamais arriver), vœux C7 non satisfaits,
  * écarts hors tolérance (§4.3). Cliquer sur un conflit met en
  * surbrillance la/les carte(s) élève concernée(s) dans classBoard.js.

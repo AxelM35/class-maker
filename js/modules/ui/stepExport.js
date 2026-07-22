@@ -1,7 +1,7 @@
 /**
  * stepExport.js
  * ------------------------------------------------------------------
- * Étape 7 (finale) du wizard (§5.7, §6.2) : récapitulatif des classes
+ * Étape 8 (finale) du wizard (§5.7, §5.8, §6.2) : récapitulatif des classes
  * constituées et actions d'export (Excel, CSV, logs) + sauvegarde de
  * session. La session est automatiquement sauvegardée en localStorage
  * à l'entrée dans cette étape, par sécurité.

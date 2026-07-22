@@ -1,11 +1,11 @@
 /**
  * stepAdjustment.js
  * ------------------------------------------------------------------
- * Étape 6 du wizard (§6.2) : assemble le tableau des classes
+ * Étape 7 du wizard (§6.2) : assemble le tableau des classes
  * (classBoard.js), le panneau de conflits (conflictsPanel.js) et le
  * formulaire d'ajout manuel d'élève (newStudentForm.js). Point
  * d'entrée principal pour l'ajustement fin après répartition
- * automatique (§5.4, §5.6, §5.8).
+ * automatique (§5.4, §5.6, §5.9).
  * ------------------------------------------------------------------
  */
 

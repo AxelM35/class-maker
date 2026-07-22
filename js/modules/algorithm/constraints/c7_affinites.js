@@ -213,7 +213,7 @@ function isAffinitySatisfied(student, allStudents) {
 
 /**
  * Recense tous les élèves dont aucun vœu n'a pu être satisfait, pour
- * remontée dans le panneau de conflits (§5.4) une fois le placement en
+ * remontée dans le panneau de conflits (§5.5) une fois le placement en
  * classes effectué. En amont, à l'étape Clusters, ce sont ces mêmes
  * élèves (candidats à la zone brouillon) que findDraftCandidates
  * identifie sur les clusters plutôt que sur les classes — voir

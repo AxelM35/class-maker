@@ -1,7 +1,7 @@
 /**
  * modals.js
  * ------------------------------------------------------------------
- * Boîtes de dialogue modales (§5.10) : Info / Avertissement / Erreur.
+ * Boîtes de dialogue modales (§5.11) : Info / Avertissement / Erreur.
  * Une seule modale visible à la fois ; les suivantes sont mises en
  * file d'attente (state.modalQueue) pour ne jamais empiler des
  * boîtes de dialogue les unes sur les autres.

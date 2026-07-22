@@ -1,16 +1,18 @@
 /**
  * logTerminal.js
  * ------------------------------------------------------------------
- * Terminal de log temps réel (§5.9) : panneau rétractable, ancré en
+ * Terminal de log temps réel (§5.10) : panneau rétractable, ancré en
  * bas de l'écran, accessible depuis n'importe quelle étape du wizard
  * (contrairement aux modules step*.js, qui ne vivent que le temps
  * d'une étape). S'abonne à logger.js (onLog) pour s'actualiser en
- * temps réel, y compris pendant que l'algorithme tourne dans le
- * Web Worker (les messages PROGRESS de stepAssignment.js appellent
- * aussi logInfo, donc remontent naturellement ici).
+ * temps réel, y compris pendant l'exécution de l'algorithme de
+ * répartition — celui-ci tourne sur le thread principal, pas dans un
+ * Web Worker (voir engine.js), mais cède régulièrement la main au
+ * navigateur (yieldToUI), ce qui laisse le terminal s'actualiser
+ * normalement pendant que les logInfo de stepAssignment.js s'accumulent.
  *
  * Fonctionnalités : filtres par niveau, recherche texte, bouton
- * Debug (masqué par défaut, §5.9), Effacer, Exporter (logExport.js).
+ * Debug (masqué par défaut, §5.10), Effacer, Exporter (logExport.js).
  * ------------------------------------------------------------------
  */
 

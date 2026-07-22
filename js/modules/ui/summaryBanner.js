@@ -1,7 +1,7 @@
 /**
  * summaryBanner.js
  * ------------------------------------------------------------------
- * Bandeau de synthèse affiché sous chaque colonne de classe (§5.5) :
+ * Bandeau de synthèse affiché sous chaque colonne de classe (§5.6) :
  * effectif, ratio F/G, moyennes Fr/Maths, %Pu, nb BEP — chaque
  * indicateur est coloré vert/orange selon les marges de tolérance
  * du §4.3 (evaluateClassMargins, metrics.js).
