@@ -481,10 +481,38 @@
   outline: 2px solid var(--color-rule-red);
 }
 
-.student-card__main {
+.student-card__row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.student-card__row--1 {
   font-weight: 600;
+}
+
+.student-card__row--2,
+.student-card__row--3 {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--color-ink-soft);
+}
+
+.student-card__breton {
+  font-weight: 600;
+  color: var(--color-chalk-green);
+}
+
+.student-card__dispositif {
+  font-weight: 600;
+  color: var(--color-amber);
+}
+
+.student-card__ecole {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .student-card__badges {
