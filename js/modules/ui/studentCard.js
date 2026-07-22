@@ -35,16 +35,16 @@ function renderStudentCard(student) {
 
   card.innerHTML = `
     <div class="student-card__row student-card__row--1">
-      <span class="student-card__name">${escapeHtml(student.nom)} ${escapeHtml(student.prenom)}</span>
+      <span class="student-card__name" title="${escapeHtml(student.nom)} ${escapeHtml(student.prenom)}">${escapeHtml(student.nom)} ${escapeHtml(student.prenom)}</span>
       <span class="student-card__sexe">${student.sexe}</span>
     </div>
     <div class="student-card__row student-card__row--2">
       <span class="student-card__breton">${student.breton === 1 ? "Breton" : ""}</span>
-      <span class="student-card__dispositif">${student.dispositifs ? escapeHtml(student.dispositifs) : ""}</span>
+      <span class="student-card__dispositif" title="${student.dispositifs ? escapeHtml(student.dispositifs) : ""}">${student.dispositifs ? escapeHtml(student.dispositifs) : ""}</span>
     </div>
     <div class="student-card__row student-card__row--3">
       <span class="student-card__niveaux">FR : ${student.fr ?? "—"} / MA : ${student.maths ?? "—"}</span>
-      <span class="student-card__ecole">${renderSchoolDot(student.ecole, student.secteur)}${escapeHtml(student.ecole || "—")}</span>
+      <span class="student-card__ecole" title="${escapeHtml(student.ecole || "—")}">${renderSchoolDot(student.ecole, student.secteur)}<span class="student-card__ecole-name">${escapeHtml(student.ecole || "—")}</span></span>
     </div>
     <div class="student-card__badges">${badges.join("")}</div>
     <div class="student-card__tooltip">

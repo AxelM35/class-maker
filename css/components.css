@@ -527,11 +527,26 @@
   font-weight: 600;
 }
 
+.student-card__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
 .student-card__row--2,
 .student-card__row--3 {
   margin-top: 2px;
   font-size: 11px;
   color: var(--color-ink-soft);
+  overflow: hidden;
+}
+
+/* Rangée 2 vide (ni Breton ni dispositif) : hauteur fixe pour que chaque
+   carte élève occupe le même espace vertical d'une classe à l'autre,
+   quel que soit son contenu (§5.6 — alignement visuel demandé). */
+.student-card__row--2 {
+  min-height: 17px;
 }
 
 .student-card__breton {
@@ -542,18 +557,34 @@
 .student-card__dispositif {
   font-weight: 600;
   color: var(--color-amber);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .student-card__ecole {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  min-width: 0;
+}
+
+.student-card__ecole-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .student-card__badges {
   margin-top: 2px;
   display: flex;
+  align-items: center;
   gap: 4px;
+  /* Rangée vide sans pictogramme : même hauteur fixe que la rangée 2, pour
+     un alignement identique d'une carte à l'autre (voir student-card__row--2). */
+  min-height: 17px;
 }
 
 .badge {
