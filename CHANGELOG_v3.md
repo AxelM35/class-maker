@@ -17,7 +17,7 @@ reconstituées par reverse engineering du processus manuel de répartition.
 Avant cette mise à jour, `buildAffinityClusters` fusionnait tous les élèves
 reliés par un vœu d'affinité sans aucune limite de taille (seule la
 contrainte C1 "Eviter" pouvait bloquer une fusion) — d'où des clusters
-pouvant atteindre 16 élèves ou plus dans certains cas réels, provoquant des
+pouvant atteindre 16 élèves ou plus dans certains scénarios, provoquant des
 déséquilibres de niveau, de mixité et de secteur entre les classes.
 
 La nouvelle version applique, dans l'ordre :
@@ -58,7 +58,7 @@ zip) a validé :
 - le plafond de 6-7 par école est bien respecté en l'absence de pont ;
 - un pont inter-écoles fusionne bien deux clusters sans limite de taille ;
 - C1 (Eviter) reste absolu, y compris pendant le repêchage du plancher ;
-- sur les données réelles (136 élèves), le plafond est bien appliqué,
+- sur un jeu de test de taille représentative (136 élèves), le plafond est bien appliqué,
   avec un seul cas de repêchage de plancher (mono-école, taille 8) et un
   cluster ponté à 53 élèves du fait de chaînes de vœux inter-écoles — ce
   dernier cas illustre concrètement pourquoi la règle 4 doit rester
@@ -66,11 +66,11 @@ zip) a validé :
 
 ## Correctif suite à retour utilisateur : les ponts ne se chaînent plus
 
-Un premier test sur données réelles avait révélé qu'un cluster pouvait
+Un premier test à grande échelle avait révélé qu'un cluster pouvait
 atteindre 53 élèves : plusieurs ponts inter-écoles *indépendants*
 (touchant chacun une école différente) finissaient par tous se greffer
 sur le même cluster déjà fusionné, simplement parce que chacun touchait
-à un moment donné la même école pivot (École St Vincent, nom fictif).
+à un moment donné la même école pivot.
 
 Comportement corrigé : un pont ne fusionne que deux clusters
 **mono-école** à la fois. Une fois fusionné, ce cluster est **figé** — 
@@ -80,7 +80,7 @@ pont, ni par un vœu intra-école — sauf si le plancher individuel (règle
 ce cas précis, la règle 2 reste prioritaire sur le gel, mais ce
 repêchage reste tracé (`report.floorOverrides`) pour validation humaine.
 
-Sur les 136 élèves réels, le plus gros cluster est ainsi passé de 53 à
+Sur ce jeu de test de 136 élèves, le plus gros cluster est ainsi passé de 53 à
 15 élèves (ce dernier cas restant dû à des repêchages de plancher
 successifs sur une même école, et non à un chaînage de ponts).
 
@@ -130,7 +130,7 @@ restent de simples indicateurs informatifs (`warning`).
 ### Tests
 
 Un test de bout en bout (suite Node autonome, hors application) a fait
-tourner `runAssignment` sur les 136 élèves réels avec 5 classes : les
+tourner `runAssignment` sur un jeu de test de 136 élèves avec 5 classes : les
 trois contraintes dures sont respectées intégralement (effectif
 26-28, mixité 42-56 % de filles, écart de niveau 0,32 en Français et
 0,12 en Maths), sans aucun conflit `error` résiduel.
@@ -171,7 +171,7 @@ par l'utilisateur :
   `error` (`HARD_EFFECTIF`, `HARD_MIXITE`, `HARD_NIVEAU_FR`,
   `HARD_NIVEAU_MATHS`) pour validation manuelle.
 
-### Résultat sur les données réelles (136 élèves)
+### Résultat sur un jeu de test de 136 élèves
 
 Toutes les contraintes dures sont respectées à l'issue de la Phase 3,
 sans aucune violation résiduelle :

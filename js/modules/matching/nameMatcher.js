@@ -86,7 +86,7 @@ function matchScore(refTokens, candidateTokens) {
  */
 
 /**
- * Résout une référence nominative brute (ex. "Hugo MARTIN") contre
+ * Résout une référence nominative brute (ex. "Prenom1 NOM1") contre
  * un index de candidats.
  * @param {string} rawName
  * @param {MatchIndexEntry[]} index
@@ -119,7 +119,7 @@ function resolveNameReference(rawName, index) {
   }
 
   // Un score minimal est exigé pour éviter qu'un seul prénom courant
-  // ("Tom") ne matche par hasard un candidat sans réel accord de nom.
+  // ne matche par hasard un candidat sans réel accord de nom.
   const MIN_ACCEPTABLE_SCORE = 2; // au moins 2 tokens communs, ou un match "complet" (+10)
   if (best.score < MIN_ACCEPTABLE_SCORE) {
     return { status: "unresolved", id: null };
