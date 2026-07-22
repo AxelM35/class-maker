@@ -83,6 +83,38 @@ function removeFromCurrentLocation(studentId) {
   }
 }
 
+/**
+ * Garde-fou C8 (§4, contrainte absolue) : engine.js (Phase 1, H10 résolu)
+ * suppose que tous les élèves Breton=1 se trouvent dans un seul et même
+ * groupe au moment où la répartition démarre — il ne repère et ne verrouille
+ * que le premier groupe contenant un bretonnant, silencieusement, sans
+ * vérifier qu'il n'y en a pas d'autre. Sans ce garde-fou, un simple
+ * glisser-déposer manuel pourrait scinder les bretonnants en plusieurs
+ * groupes et faire passer certains d'entre eux à côté de la classe
+ * bilingue, sans le moindre avertissement.
+ * @param {number} studentId - élève dont on teste le déplacement
+ * @param {(otherStudentId: number) => boolean} destinationMatches - vrai si
+ *   otherStudentId se trouve déjà à la destination visée par le déplacement
+ * @returns {boolean} vrai si le déplacement séparerait des élèves Breton=1
+ */
+function wouldSplitBretonGroup(studentId, destinationMatches) {
+  const student = state.students.find((s) => s.tNum === studentId);
+  if (!student || student.breton !== 1) return false;
+
+  return state.students.some(
+    (s) => s.tNum !== studentId && s.breton === 1 && !destinationMatches(s.tNum)
+  );
+}
+
+function showBretonSplitWarning() {
+  showModal({
+    level: "warning",
+    title: "Groupe Breton (C8)",
+    message:
+      "Impossible de déplacer cet élève seul : tous les élèves du dispositif bilingue Breton (C8, contrainte absolue, §4) doivent rester regroupés dans un même groupe jusqu'au lancement de la répartition.",
+  });
+}
+
 function renderClustersStep(container) {
   let manuallyEdited = false;
 
@@ -195,6 +227,11 @@ function renderClustersStep(container) {
     const targetCluster = state.clusters.find((c) => c.id === targetClusterId);
     if (!targetCluster || targetCluster.memberIds.includes(studentId)) return;
 
+    if (wouldSplitBretonGroup(studentId, (id) => targetCluster.memberIds.includes(id))) {
+      showBretonSplitWarning();
+      return;
+    }
+
     const eviterGraph = buildEviterGraph(state.students);
     if (groupHasInternalConflict([...targetCluster.memberIds, studentId], eviterGraph)) {
       showModal({
@@ -214,6 +251,11 @@ function renderClustersStep(container) {
   }
 
   function moveStudentToNewCluster(studentId) {
+    if (wouldSplitBretonGroup(studentId, () => false)) {
+      showBretonSplitWarning();
+      return;
+    }
+
     removeFromCurrentLocation(studentId);
     state.clusters.push({ id: makeClusterId(), memberIds: [studentId] });
     manuallyEdited = true;
@@ -222,6 +264,11 @@ function renderClustersStep(container) {
   }
 
   function moveStudentToDraft(studentId) {
+    if (wouldSplitBretonGroup(studentId, (id) => state.draftStudentIds.includes(id))) {
+      showBretonSplitWarning();
+      return;
+    }
+
     removeFromCurrentLocation(studentId);
     if (!state.draftStudentIds.includes(studentId)) state.draftStudentIds.push(studentId);
     manuallyEdited = true;
