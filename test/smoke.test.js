@@ -98,6 +98,50 @@ async function main() {
     }, 7);
     assert(overCapClusters === 0, `${overCapClusters} cluster(s) mono-école dépassent le plafond (régression du bug de fusion en cascade)`);
 
+    // RÉGRESSION (H10) : engine.js ne repère et ne verrouille que le PREMIER
+    // groupe contenant un élève Breton=1 pour la classe bilingue (C8) — un
+    // glisser-déposer qui scinderait les bretonnants en plusieurs groupes
+    // romprait donc cette contrainte absolue sans le moindre avertissement.
+    // stepClusters.js doit bloquer ce déplacement (voir wouldSplitBretonGroup).
+    const bretonGuardSetup = await page.evaluate(() => {
+      const bretonIds = state.students.filter((s) => s.breton === 1).map((s) => s.tNum);
+      const bretonCluster = state.clusters.find((c) => c.memberIds.some((id) => bretonIds.includes(id)));
+      const otherCluster = state.clusters.find(
+        (c) => c.id !== bretonCluster?.id && !c.memberIds.some((id) => bretonIds.includes(id))
+      );
+      return {
+        bretonCount: bretonIds.length,
+        bretonClusterId: bretonCluster?.id ?? null,
+        otherClusterId: otherCluster?.id ?? null,
+        movedStudentId: bretonCluster?.memberIds?.[0] ?? null,
+      };
+    });
+
+    if (bretonGuardSetup.bretonCount >= 2 && bretonGuardSetup.otherClusterId) {
+      await page.evaluate(({ movedStudentId, otherClusterId }) => {
+        const targetEl = document.querySelector(`.cluster-block[data-cluster-id="${otherClusterId}"]`);
+        const evt = new Event("drop", { bubbles: true, cancelable: true });
+        evt.dataTransfer = {
+          types: ["application/x-classesmaker-student"],
+          getData: () => JSON.stringify({ studentId: movedStudentId }),
+        };
+        targetEl.dispatchEvent(evt);
+      }, bretonGuardSetup);
+      await page.waitForTimeout(150);
+
+      const modalTitle = await page.locator(".modal__title").first().textContent().catch(() => null);
+      assert(
+        modalTitle && modalTitle.includes("Breton"),
+        `le déplacement d'un élève Breton hors de son groupe devrait déclencher un avertissement C8, titre obtenu : ${modalTitle}`
+      );
+
+      const stillGrouped = await page.evaluate(({ movedStudentId, bretonClusterId }) => {
+        const cluster = state.clusters.find((c) => c.id === bretonClusterId);
+        return cluster ? cluster.memberIds.includes(movedStudentId) : false;
+      }, bretonGuardSetup);
+      assert(stillGrouped, "l'élève Breton ne doit pas avoir été déplacé hors de son groupe (régression du garde-fou C8)");
+    }
+
     const realErrors = consoleErrors.filter((e) => !e.includes("favicon"));
     assert(realErrors.length === 0, `erreur(s) console inattendue(s) :\n${realErrors.join("\n")}`);
 
