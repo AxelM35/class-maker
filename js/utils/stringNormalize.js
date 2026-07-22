@@ -34,15 +34,15 @@ function stripAccents(str) {
 function normalize(str) {
   return stripAccents(String(str ?? ""))
     .toLowerCase()
-    .replace(/[\u2019']/g, " ") // apostrophes -> espace (ex. "d'Angelo")
+    .replace(/[\u2019']/g, " ") // apostrophes -> espace (ex. "N'Djamena" -> "N Djamena")
     .replace(/[-_]/g, " ")      // tirets/underscores -> espace
     .replace(/\s+/g, " ")
     .trim();
 }
 
 /**
- * Retire les précisions entre parenthèses (ex. "Nathan DUBOIS (cousin)"
- * -> "Nathan DUBOIS") — utilisé pour la colonne Eviter (§3.2).
+ * Retire les précisions entre parenthèses (ex. "Prenom1 NOM1 (cousin)"
+ * -> "Prenom1 NOM1") — utilisé pour la colonne Eviter (§3.2).
  * @param {string} str
  * @returns {string}
  */
@@ -55,7 +55,7 @@ function stripParentheses(str) {
 
 /**
  * Retire un "?" de fin/de doute marquant un vœu incertain
- * (ex. "Karim ?" -> "Karim", traité comme optionnel ailleurs).
+ * (ex. "Prenom1 ?" -> "Prenom1", traité comme optionnel ailleurs).
  * Ne fait que nettoyer le texte ; le caractère "incertain" est
  * détecté séparément par isUncertain().
  * @param {string} str
@@ -82,7 +82,7 @@ function isUncertain(str) {
  * Découpe une liste de noms séparés par des virgules en items propres,
  * en retirant les parenthèses et les entrées vides.
  * Utilisé pour les colonnes Affinités et Eviter.
- * ex. "Hugo MARTIN, Nathan DUBOIS (cousin), " -> ["Hugo MARTIN", "Nathan DUBOIS"]
+ * ex. "Prenom1 NOM1, Prenom2 NOM2 (cousin), " -> ["Prenom1 NOM1", "Prenom2 NOM2"]
  * @param {string} raw
  * @returns {string[]}
  */
