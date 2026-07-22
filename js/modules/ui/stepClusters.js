@@ -213,10 +213,15 @@ function renderClustersStep(container) {
     // ou qu'il ait été entraîné dedans par le vœu (satisfait) d'un autre
     // élève sans que le sien le soit en retour (§5.2 — voir
     // findDraftCandidates, cahier des charges v2.0).
+    // Position d'affichage figée à la création (décroissante, comme avant) :
+    // voir le garde-fou de renderGrid() plus bas, qui ne retrie jamais par
+    // taille après ce premier calcul (l'utilisateur a demandé des groupes
+    // qui ne sautent pas de place à chaque ajout d'élève).
     state.clusters = merged
       .map((ids) => ids.filter((id) => !draftSet.has(id)))
       .filter((ids) => ids.length > 0)
-      .map((ids) => ({ id: makeClusterId(), memberIds: ids }));
+      .sort((a, b) => b.length - a.length)
+      .map((ids, index) => ({ id: makeClusterId(), memberIds: ids, order: index }));
     state.draftStudentIds = draftIds;
 
     if (draftIds.length > 0) {
@@ -263,7 +268,8 @@ function renderClustersStep(container) {
     }
 
     removeFromCurrentLocation(studentId);
-    state.clusters.push({ id: makeClusterId(), memberIds: [studentId] });
+    const maxOrder = state.clusters.reduce((max, c) => Math.max(max, c.order ?? 0), -1);
+    state.clusters.push({ id: makeClusterId(), memberIds: [studentId], order: maxOrder + 1 });
     manuallyEdited = true;
     markDirty();
     refresh();
@@ -344,7 +350,9 @@ function renderClustersStep(container) {
 
   function renderGrid() {
     gridEl.innerHTML = "";
-    const sorted = [...state.clusters].sort((a, b) => b.memberIds.length - a.memberIds.length);
+    // Tri par position fixe (order), pas par taille : un groupe ne doit pas
+    // changer de place quand un élève y est ajouté ou retiré (cf. computeInitialClusters).
+    const sorted = [...state.clusters].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     for (const cluster of sorted) {
       gridEl.appendChild(renderClusterBlock(cluster));
     }
