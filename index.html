@@ -28,7 +28,7 @@
       </button>
     </header>
 
-    <!-- Fil du wizard : 7 étapes (§6.2) -->
+    <!-- Fil du wizard : 8 étapes (§6.2, v2.0) -->
     <nav class="wizard-nav" id="wizard-nav" aria-label="Étapes de constitution des classes">
       <ol class="wizard-nav__list">
         <li class="wizard-nav__item" data-step="import">
@@ -43,20 +43,24 @@
           <span class="wizard-nav__num">03</span>
           <span class="wizard-nav__label">Vérification</span>
         </li>
-        <li class="wizard-nav__item" data-step="settings">
+        <li class="wizard-nav__item" data-step="clusters">
           <span class="wizard-nav__num">04</span>
+          <span class="wizard-nav__label">Clusters</span>
+        </li>
+        <li class="wizard-nav__item" data-step="settings">
+          <span class="wizard-nav__num">05</span>
           <span class="wizard-nav__label">Paramétrage</span>
         </li>
         <li class="wizard-nav__item" data-step="assignment">
-          <span class="wizard-nav__num">05</span>
+          <span class="wizard-nav__num">06</span>
           <span class="wizard-nav__label">Répartition</span>
         </li>
         <li class="wizard-nav__item" data-step="adjustment">
-          <span class="wizard-nav__num">06</span>
+          <span class="wizard-nav__num">07</span>
           <span class="wizard-nav__label">Ajustement</span>
         </li>
         <li class="wizard-nav__item" data-step="export">
-          <span class="wizard-nav__num">07</span>
+          <span class="wizard-nav__num">08</span>
           <span class="wizard-nav__label">Export</span>
         </li>
       </ol>
@@ -123,6 +127,7 @@
 
   <script src="js/modules/ui/progressBar.js"></script>
   <script src="js/modules/ui/modals.js"></script>
+  <script src="js/modules/ui/schoolColor.js"></script>
   <script src="js/modules/ui/studentCard.js"></script>
   <script src="js/modules/ui/summaryBanner.js"></script>
   <script src="js/modules/ui/conflictsPanel.js"></script>
@@ -139,6 +144,7 @@
   <script src="js/modules/ui/stepImport.js"></script>
   <script src="js/modules/ui/stepMapping.js"></script>
   <script src="js/modules/ui/stepVerification.js"></script>
+  <script src="js/modules/ui/stepClusters.js"></script>
   <script src="js/modules/ui/stepSettings.js"></script>
   <script src="js/modules/ui/stepAssignment.js"></script>
   <script src="js/modules/ui/stepAdjustment.js"></script>

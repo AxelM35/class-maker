@@ -49,6 +49,12 @@
  */
 
 /**
+ * @typedef {Object} Cluster
+ * @property {string} id
+ * @property {number[]} memberIds - tNum des élèves du cluster, unité atomique de placement (§5.2, §5.4)
+ */
+
+/**
  * @typedef {Object} CriteriaConfig
  * @property {boolean} enabled
  * @property {number} weight - poids relatif 1-5 (niveaux 2 et 3 uniquement, §5.2)
@@ -91,6 +97,23 @@ function createInitialState() {
 
     /** @type {ClasseConfig[]} */
     classes: [],
+
+    /**
+     * Clusters d'affinités constitués/ajustés à l'étape 4 (§5.2), unités
+     * atomiques de placement pour engine.js (§5.4). Vide tant que
+     * l'étape Clusters n'a pas encore été traversée.
+     * @type {Cluster[]}
+     */
+    clusters: [],
+
+    /**
+     * tNum des élèves en zone brouillon (§5.2) : conflit C1/C7 non résolu
+     * automatiquement. Statut "non affecté" tant qu'ils n'ont pas été
+     * remis manuellement dans un cluster ; bloque le passage à l'étape
+     * Paramétrage tant que non vide.
+     * @type {number[]}
+     */
+    draftStudentIds: [],
 
     /** Paramétrage de la répartition (§5.2) */
     settings: {

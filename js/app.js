@@ -15,10 +15,13 @@
 registerStep("import", renderImportStep);
 registerStep("mapping", renderMappingStep);
 registerStep("verification", renderVerificationStep);
+registerStep("clusters", renderClustersStep);
 registerStep("settings", renderSettingsStep);
 registerStep("assignment", renderAssignmentStep);
 registerStep("adjustment", renderAdjustmentStep);
 registerStep("export", renderExportStep);
+
+registerStepGuard("clusters", guardEnterClustersStep);
 
 function checkDependencies() {
   if (typeof XLSX === "undefined") {
