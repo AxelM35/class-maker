@@ -1,35 +1,99 @@
 /* ==========================================================================
    ClassesMaker — main.css
-   Design : registre / cahier d'écolier — sobre, professionnel (§6.1)
+   Design : direction moderne et colorée — palette vive, cartes arrondies,
+   ombres douces (§6.3). Remplace l'ancien registre « cahier d'écolier ».
    ========================================================================== */
 
+/* ---- Polices auto-hébergées (§7.1 : zéro dépendance réseau) ---- */
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/poppins-600.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/poppins-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/roboto-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/roboto-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/roboto-mono-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Roboto Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/roboto-mono-500.woff2") format("woff2");
+}
+
 :root {
-  /* Couleurs — palette "registre scolaire" */
-  --color-paper: #edefe9;
-  --color-paper-raised: #f6f7f3;
-  --color-ink: #1f2933;
-  --color-ink-soft: #4a5560;
-  --color-slate: #5b6b73;
-  --color-rule-red: #b23a3a;
-  --color-rule-red-soft: #b23a3a26;
-  --color-chalk-green: #3f6b4f;
-  --color-chalk-green-soft: #3f6b4f1f;
-  --color-amber: #c4832a;
-  --color-amber-soft: #c4832a22;
-  --color-error: #b23a3a;
-  --color-error-soft: #b23a3a1a;
-  --color-border: #d7d9cf;
+  /* Couleurs — surfaces et neutres */
+  --color-bg: #f7f7fb;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f4f4fa;
+  --color-ink: #1c1b1f;
+  --color-ink-soft: #49454f;
+  --color-slate: #6b6876;
+  --color-border: #e2e4ea;
+
+  /* Couleurs — accent principal (indigo, §6.3) */
+  --color-primary: #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-primary-soft: #eef2ff;
+  --color-primary-container: #e0e7ff;
+  --color-on-primary: #ffffff;
+
+  /* Couleurs — statuts fonctionnels (§4.3, §5.9) : vert = OK, orange =
+     avertissement, rouge = conflit. Le vert est volontairement distinct
+     du vert école St Michel (§6.1) pour éviter toute confusion sur la
+     carte élève. */
+  --color-chalk-green: #16a34a;
+  --color-chalk-green-soft: #dcfce7;
+  --color-amber: #f59e0b;
+  --color-amber-soft: #fef3c7;
+  --color-error: #dc2626;
+  --color-error-soft: #fee2e2;
+  --color-info: #0284c7;
+  --color-info-soft: #e0f2fe;
 
   /* Statuts (bandeau de synthèse, logs — §4.3 / §5.9) */
   --status-ok: var(--color-chalk-green);
   --status-warn: var(--color-amber);
   --status-error: var(--color-error);
-  --status-info: #2e5266;
+  --status-info: var(--color-info);
 
   /* Typographie */
-  --font-display: "Fraunces", "Georgia", serif;
-  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", "Consolas", monospace;
+  --font-display: "Poppins", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Roboto", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Roboto Mono", "Consolas", monospace;
 
   /* Échelle */
   --space-1: 4px;
@@ -40,11 +104,15 @@
   --space-6: 32px;
   --space-7: 48px;
 
-  --radius-sm: 3px;
-  --radius-md: 6px;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
 
-  --margin-rule-width: 3px;
-  --margin-rule-offset: 56px;
+  /* Ombres douces (§6.3) */
+  --shadow-sm: 0 1px 3px rgba(28, 27, 47, 0.08), 0 1px 2px rgba(28, 27, 47, 0.06);
+  --shadow-md: 0 8px 20px rgba(28, 27, 47, 0.10), 0 2px 6px rgba(28, 27, 47, 0.06);
+  --shadow-lg: 0 16px 32px rgba(28, 27, 47, 0.14), 0 4px 10px rgba(28, 27, 47, 0.08);
 }
 
 * {
@@ -54,21 +122,11 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--color-paper);
+  background: var(--color-bg);
   color: var(--color-ink);
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.5;
-}
-
-/* Quadrillage discret en fond, évoque le cahier Seyès sans surcharger */
-body {
-  background-image:
-    linear-gradient(var(--color-border) 1px, transparent 1px);
-  background-size: 100% 28px;
-  background-attachment: local;
-  background-color: var(--color-paper);
-  opacity: 1;
 }
 
 .app {
@@ -83,7 +141,6 @@ body {
 
 .app-header {
   padding: var(--space-6) var(--space-6) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
 }
 
 .app-header__brand {
@@ -95,18 +152,18 @@ body {
 .app-header__mark {
   font-family: var(--font-mono);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.06em;
-  color: #fff;
-  background: var(--color-rule-red);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
 }
 
 .app-header__title {
   font-family: var(--font-display);
   font-size: 28px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.01em;
   margin: 0;
   color: var(--color-ink);
@@ -122,7 +179,6 @@ body {
 
 .wizard-nav {
   padding: var(--space-4) var(--space-6);
-  border-bottom: 1px solid var(--color-border);
 }
 
 .wizard-nav__list {
@@ -138,12 +194,13 @@ body {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
   color: var(--color-slate);
   white-space: nowrap;
   cursor: not-allowed;
   border: 1px solid transparent;
+  background: var(--color-surface);
 }
 
 .wizard-nav__item.is-reachable {
@@ -151,7 +208,7 @@ body {
 }
 
 .wizard-nav__item.is-reachable:hover {
-  background: var(--color-paper-raised);
+  background: var(--color-surface-raised);
   color: var(--color-ink);
 }
 
@@ -167,13 +224,13 @@ body {
 }
 
 .wizard-nav__item.is-active {
-  background: var(--color-paper-raised);
-  border-color: var(--color-border);
-  color: var(--color-ink);
+  background: var(--color-primary-soft);
+  border-color: var(--color-primary-container);
+  color: var(--color-primary-hover);
 }
 
 .wizard-nav__item.is-active .wizard-nav__num {
-  color: var(--color-rule-red);
+  color: var(--color-primary);
   font-weight: 700;
 }
 
@@ -185,26 +242,17 @@ body {
   color: var(--color-chalk-green);
 }
 
-/* ---- Zone de contenu principale ----
-   Signature visuelle : marge rouge verticale façon cahier d'écolier */
+/* ---- Zone de contenu principale ---- */
 
 .wizard-content {
   flex: 1;
   position: relative;
-  margin-left: var(--margin-rule-offset);
-  padding: var(--space-6) var(--space-6) var(--space-7);
+  margin: 0 var(--space-6) var(--space-7);
+  padding: var(--space-6);
   min-height: 480px;
-}
-
-.wizard-content::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: calc(-1 * (var(--margin-rule-offset) - 24px));
-  width: var(--margin-rule-width);
-  background: var(--color-rule-red);
-  opacity: 0.55;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .step-placeholder {
@@ -214,14 +262,13 @@ body {
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-5);
-  background: var(--color-paper-raised);
+  background: var(--color-surface-raised);
 }
 
 /* ---- Pied de page / RGPD ---- */
 
 .app-footer {
   padding: var(--space-4) var(--space-6);
-  border-top: 1px solid var(--color-border);
 }
 
 .app-footer__rgpd {

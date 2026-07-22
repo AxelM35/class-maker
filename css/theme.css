@@ -1,13 +1,13 @@
 /* ==========================================================================
    ClassesMaker — theme.css
    Finitions transverses : accessibilité clavier, scrollbars, sélection
-   de texte — cohérentes avec l'identité "registre scolaire" (§6.1).
+   de texte — cohérentes avec la direction moderne et colorée (§6.3).
    ========================================================================== */
 
 /* ---- Focus clavier visible (accessibilité) ---- */
 
 :focus-visible {
-  outline: 2px solid var(--color-rule-red);
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
@@ -18,7 +18,7 @@
 /* ---- Sélection de texte ---- */
 
 ::selection {
-  background: var(--color-rule-red-soft);
+  background: var(--color-primary-soft);
   color: var(--color-ink);
 }
 
