@@ -52,6 +52,10 @@
  * @typedef {Object} Cluster
  * @property {string} id
  * @property {number[]} memberIds - tNum des élèves du cluster, unité atomique de placement (§5.2, §5.4)
+ * @property {number} order - position d'affichage fixe à l'étape Clusters (§5.2) : assignée une fois à la
+ *   création du groupe et jamais recalculée, pour que les groupes ne changent pas de place à chaque
+ *   glisser-déposer. N'a aucune incidence sur l'algorithme de répartition (§5.4), qui trie par taille
+ *   décroissante indépendamment (voir engine.js).
  */
 
 /**
