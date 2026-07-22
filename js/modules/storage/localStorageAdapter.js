@@ -32,6 +32,8 @@ function buildSessionSnapshot() {
     students: state.students,
     unconfirmedStudents: state.unconfirmedStudents,
     validationIssues: state.validationIssues,
+    clusters: state.clusters,
+    draftStudentIds: state.draftStudentIds,
     classes: state.classes,
     settings: state.settings,
     conflicts: state.conflicts,
@@ -110,6 +112,8 @@ function restoreSession() {
     state.students = snapshot.students ?? [];
     state.unconfirmedStudents = snapshot.unconfirmedStudents ?? [];
     state.validationIssues = snapshot.validationIssues ?? [];
+    state.clusters = snapshot.clusters ?? [];
+    state.draftStudentIds = snapshot.draftStudentIds ?? [];
     state.classes = snapshot.classes ?? [];
     state.settings = snapshot.settings ?? state.settings;
     state.conflicts = snapshot.conflicts ?? [];

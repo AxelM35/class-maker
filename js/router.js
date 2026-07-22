@@ -1,8 +1,8 @@
 /**
  * router.js
  * ------------------------------------------------------------------
- * Navigation entre les 7 étapes du wizard (§6.2) :
- *   import → mapping → verification → settings
+ * Navigation entre les 8 étapes du wizard (§6.2, v2.0) :
+ *   import → mapping → verification → clusters → settings
  *   → assignment → adjustment → export
  *
  * Chaque étape est un module qui expose une fonction `render(container)`.
@@ -17,6 +17,7 @@ const STEPS = [
   { id: "import", label: "Import" },
   { id: "mapping", label: "Mapping colonnes" },
   { id: "verification", label: "Vérification" },
+  { id: "clusters", label: "Clusters" },
   { id: "settings", label: "Paramétrage" },
   { id: "assignment", label: "Répartition" },
   { id: "adjustment", label: "Ajustement" },
@@ -31,6 +32,17 @@ const STEPS = [
  */
 const stepRenderers = {};
 
+/**
+ * Registre des gardes de navigation (§5.2 : invalidation à l'entrée de
+ * l'étape Clusters si une répartition/ajustement a déjà eu lieu — même
+ * principe que la confirmation des élèves verrouillés, §5.11).
+ * Une garde est appelée avant que le router ne fasse effectivement
+ * passer `state.currentStep` sur cette étape ; si elle résout `false`,
+ * la navigation est annulée et l'affichage courant ne change pas.
+ * @type {Record<string, () => Promise<boolean>>}
+ */
+const stepGuards = {};
+
 /** Permet à un module d'étape de s'enregistrer auprès du router */
 function registerStep(stepId, renderFn) {
   if (!STEPS.some((s) => s.id === stepId)) {
@@ -39,29 +51,55 @@ function registerStep(stepId, renderFn) {
   stepRenderers[stepId] = renderFn;
 }
 
-/** Navigue vers une étape donnée et met à jour l'affichage */
-function goToStep(stepId) {
+/**
+ * Permet à un module d'étape d'enregistrer une garde de navigation
+ * asynchrone, consultée par goToStep avant d'entrer sur cette étape.
+ * @param {string} stepId
+ * @param {() => Promise<boolean>} guardFn
+ */
+function registerStepGuard(stepId, guardFn) {
   if (!STEPS.some((s) => s.id === stepId)) {
     throw new Error(`router.js : étape inconnue "${stepId}"`);
   }
+  stepGuards[stepId] = guardFn;
+}
+
+/**
+ * Navigue vers une étape donnée et met à jour l'affichage.
+ * @param {string} stepId
+ * @returns {Promise<boolean>} true si la navigation a bien eu lieu (false si une garde l'a annulée)
+ */
+async function goToStep(stepId) {
+  if (!STEPS.some((s) => s.id === stepId)) {
+    throw new Error(`router.js : étape inconnue "${stepId}"`);
+  }
+
+  const guard = stepGuards[stepId];
+  if (guard) {
+    const proceed = await guard();
+    if (!proceed) return false;
+  }
+
   state.currentStep = stepId;
   renderCurrentStep();
   updateNavHighlight();
+  return true;
 }
 
 /** Marque l'étape courante comme complétée et passe à la suivante */
-function goToNextStep() {
+async function goToNextStep() {
   const idx = STEPS.findIndex((s) => s.id === state.currentStep);
-  state.stepsCompleted.add(state.currentStep);
-  if (idx < STEPS.length - 1) {
-    goToStep(STEPS[idx + 1].id);
-  }
+  if (idx >= STEPS.length - 1) return;
+
+  const fromStep = state.currentStep;
+  const navigated = await goToStep(STEPS[idx + 1].id);
+  if (navigated) state.stepsCompleted.add(fromStep);
 }
 
-function goToPreviousStep() {
+async function goToPreviousStep() {
   const idx = STEPS.findIndex((s) => s.id === state.currentStep);
   if (idx > 0) {
-    goToStep(STEPS[idx - 1].id);
+    await goToStep(STEPS[idx - 1].id);
   }
 }
 
